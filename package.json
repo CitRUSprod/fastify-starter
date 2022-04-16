@@ -38,6 +38,7 @@
         "extends": "./configs/eslint/index.js",
         "ignorePatterns": [
             "!.travis.yml",
+            "/db/data",
             "dist",
             "pnpm-lock.yaml"
         ]

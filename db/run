@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+
+DB_DIR=$(dirname "$0")
+ROOT_DIR=$DB_DIR/..
+
+ABS_ROOT_PATH=$(realpath "$ROOT_DIR")
+PROJECT_NAME=$(basename "$ABS_ROOT_PATH")
+
+docker compose --env-file "$ABS_ROOT_PATH"/.env -f "$DB_DIR"/docker-compose.yml -p "$PROJECT_NAME" "$@"
+
+exit 0

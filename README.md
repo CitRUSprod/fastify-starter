@@ -58,3 +58,14 @@ All environment variables are written to the `.env` file. If it doesn't exist, j
 ```sh
 cp .env.example .env
 ```
+
+### Database
+
+> **NOTE:** Before using the database from this template, you need to install `docker` and `docker compose`.
+
+Start and stop the `postgres` database:
+
+```sh
+db/start
+db/stop
+```

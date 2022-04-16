@@ -1,5 +1,6 @@
 .env
 .vscode
 *.log
+/db/data
 dist
 node_modules
