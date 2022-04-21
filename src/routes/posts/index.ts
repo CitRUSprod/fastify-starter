@@ -7,6 +7,7 @@ export const postsRoute: FastifyPluginCallback = (app, options, done) => {
     // eslint-disable-next-line @typescript-eslint/naming-convention
     app.get<{ Querystring: Types.GetPostsQuery }>("/", {
         schema: {
+            tags: ["posts"],
             querystring: schemas.getPostsQuery
         },
         handler(req) {
@@ -17,6 +18,7 @@ export const postsRoute: FastifyPluginCallback = (app, options, done) => {
     // eslint-disable-next-line @typescript-eslint/naming-convention
     app.post<{ Body: Types.CreatePostBody }>("/", {
         schema: {
+            tags: ["posts"],
             body: schemas.createPostBody
         },
         handler(req) {
@@ -27,6 +29,7 @@ export const postsRoute: FastifyPluginCallback = (app, options, done) => {
     // eslint-disable-next-line @typescript-eslint/naming-convention
     app.get<{ Params: Types.GetPostParams }>("/:id", {
         schema: {
+            tags: ["posts"],
             params: schemas.getPostParams
         },
         handler(req) {
@@ -37,6 +40,7 @@ export const postsRoute: FastifyPluginCallback = (app, options, done) => {
     // eslint-disable-next-line @typescript-eslint/naming-convention
     app.patch<{ Params: Types.UpdatePostParams; Body: Types.UpdatePostBody }>("/:id", {
         schema: {
+            tags: ["posts"],
             params: schemas.updatePostParams,
             body: schemas.updatePostBody
         },
@@ -48,6 +52,7 @@ export const postsRoute: FastifyPluginCallback = (app, options, done) => {
     // eslint-disable-next-line @typescript-eslint/naming-convention
     app.delete<{ Params: Types.DeletePostParams }>("/:id", {
         schema: {
+            tags: ["posts"],
             params: schemas.deletePostParams
         },
         handler(req) {

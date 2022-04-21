@@ -25,6 +25,11 @@ pnpm build
 pnpm start
 ```
 
+Links:
+
+-   http://localhost:6500 - API
+-   http://localhost:6500/docs - API documentation
+
 ### Tools
 
 Commit with `commitizen`:
