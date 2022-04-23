@@ -7,6 +7,31 @@ generator client {
     provider = "prisma-client-js"
 }
 
+enum Role {
+    User
+    Admin
+}
+
+model User {
+    id Int @id @default(autoincrement())
+    email String @unique
+    username String @unique
+    password String
+    role Role @default(User)
+    verified Boolean @default(false)
+    banned Boolean @default(false)
+    registrationDate DateTime @default(now())
+    refreshTokens RefreshToken[]
+}
+
+model RefreshToken {
+    id Int @id @default(autoincrement())
+    token String @unique
+    userId Int
+    user User @relation(fields: [userId], references: [id])
+    creationDate DateTime @default(now())
+}
+
 model Post {
     id Int @id @default(autoincrement())
     title String

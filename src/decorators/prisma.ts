@@ -1,4 +1,4 @@
-import { FastifyPluginCallback } from "fastify"
+import { FastifyInstance, FastifyPluginCallback } from "fastify"
 import { PrismaClient } from "@prisma/client"
 
 declare module "fastify" {
@@ -11,7 +11,7 @@ export const prisma: FastifyPluginCallback = (app, options, done) => {
     const client = new PrismaClient()
 
     client.$connect().then(() => {
-        app.decorate<PrismaClient>("prisma", client)
+        app.decorate<FastifyInstance["prisma"]>("prisma", client)
 
         done()
     })
