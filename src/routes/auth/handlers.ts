@@ -3,8 +3,8 @@ import { BadRequest, Unauthorized, InternalServerError } from "http-errors"
 import argon2 from "argon2"
 import { dtos } from "$/utils"
 import { Payload } from "$/types"
-import * as Types from "./types"
 import * as utils from "./utils"
+import * as Types from "./types"
 
 export async function register(app: FastifyInstance, body: Types.RegisterBody) {
     const userByEmail = await app.prisma.user.findFirst({ where: { email: body.email } })

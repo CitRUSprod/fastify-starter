@@ -21,8 +21,9 @@ export const postsRoute: FastifyPluginCallback = (app, options, done) => {
             tags: ["posts"],
             body: schemas.createPostBody
         },
+        preHandler: app.auth([app.isAuthorized]),
         async handler(req) {
-            return handlers.createPost(app, req.body)
+            return handlers.createPost(app, req.user, req.body)
         }
     })
 
@@ -44,8 +45,9 @@ export const postsRoute: FastifyPluginCallback = (app, options, done) => {
             params: schemas.updatePostParams,
             body: schemas.updatePostBody
         },
+        preHandler: app.auth([app.isAuthorized]),
         async handler(req) {
-            return handlers.updatePost(app, req.params, req.body)
+            return handlers.updatePost(app, req.user, req.params, req.body)
         }
     })
 
@@ -55,8 +57,9 @@ export const postsRoute: FastifyPluginCallback = (app, options, done) => {
             tags: ["posts"],
             params: schemas.deletePostParams
         },
+        preHandler: app.auth([app.isAuthorized]),
         async handler(req) {
-            return handlers.deletePost(app, req.params)
+            return handlers.deletePost(app, req.user, req.params)
         }
     })
 

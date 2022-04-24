@@ -1,6 +1,8 @@
 import { FastifyInstance } from "fastify"
-import { Prisma } from "@prisma/client"
-import { dtos, getItemsPage } from "$/utils"
+import { MethodNotAllowed } from "http-errors"
+import { Prisma, Role } from "@prisma/client"
+import { dtos, getItemsPage, hasAccess } from "$/utils"
+import { Payload } from "$/types"
 import * as utils from "./utils"
 import * as Types from "./types"
 
@@ -17,7 +19,8 @@ export async function getPosts(app: FastifyInstance, query: Types.GetPostsQuery)
                 skip,
                 take,
                 where,
-                orderBy: query.sort && { [query.sort]: query.order ?? "asc" }
+                orderBy: query.sort && { [query.sort]: query.order ?? "asc" },
+                include: { author: true }
             })
 
             return { totalItems, items: posts.map(dtos.post) }
@@ -27,34 +30,69 @@ export async function getPosts(app: FastifyInstance, query: Types.GetPostsQuery)
     return page
 }
 
-export async function createPost(app: FastifyInstance, body: Types.CreatePostBody) {
-    const post = await app.prisma.post.create({ data: { ...body, creationDate: new Date() } })
-    return dtos.post(post)
-}
-
-export async function getPost(app: FastifyInstance, params: Types.GetPostParams) {
-    await utils.checkPost(app, params.id)
-    const post = (await app.prisma.post.findFirst({ where: { id: params.id } }))!
-    return dtos.post(post)
-}
-
-export async function updatePost(
+export async function createPost(
     app: FastifyInstance,
-    params: Types.UpdatePostParams,
-    body: Types.UpdatePostBody
+    payload: Payload,
+    body: Types.CreatePostBody
 ) {
-    await utils.checkPost(app, params.id)
-
-    const post = await app.prisma.post.update({
-        where: { id: params.id },
-        data: { title: body.title, content: body.content }
+    const user = await app.getUser(payload.id)
+    const post = await app.prisma.post.create({
+        data: { ...body, authorId: user.id, creationDate: new Date() },
+        include: { author: true }
     })
 
     return dtos.post(post)
 }
 
-export async function deletePost(app: FastifyInstance, params: Types.DeletePostParams) {
-    await utils.checkPost(app, params.id)
-    const post = await app.prisma.post.delete({ where: { id: params.id } })
+export async function getPost(app: FastifyInstance, params: Types.GetPostParams) {
+    await utils.getPost(app, params.id)
+
+    const post = (await app.prisma.post.findFirst({
+        where: { id: params.id },
+        include: { author: true }
+    }))!
+
     return dtos.post(post)
+}
+
+export async function updatePost(
+    app: FastifyInstance,
+    payload: Payload,
+    params: Types.UpdatePostParams,
+    body: Types.UpdatePostBody
+) {
+    const post = await utils.getPost(app, params.id)
+    const user = await app.getUser(payload.id)
+
+    if (post.authorId === user.id || hasAccess(user, Role.Admin)) {
+        const updatedPost = await app.prisma.post.update({
+            where: { id: params.id },
+            data: { title: body.title, content: body.content, editingDate: new Date() },
+            include: { author: true }
+        })
+
+        return dtos.post(updatedPost)
+    } else {
+        throw new MethodNotAllowed("No access")
+    }
+}
+
+export async function deletePost(
+    app: FastifyInstance,
+    payload: Payload,
+    params: Types.DeletePostParams
+) {
+    const post = await utils.getPost(app, params.id)
+    const user = await app.getUser(payload.id)
+
+    if (post.authorId === user.id || hasAccess(user, Role.Admin)) {
+        const deletedPost = await app.prisma.post.delete({
+            where: { id: params.id },
+            include: { author: true }
+        })
+
+        return dtos.post(deletedPost)
+    } else {
+        throw new MethodNotAllowed("No access")
+    }
 }

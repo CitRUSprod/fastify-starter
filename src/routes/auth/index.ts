@@ -11,8 +11,9 @@ export const authRoute: FastifyPluginCallback = (app, options, done) => {
             tags: ["auth"],
             body: schemas.registerBody
         },
-        async handler(req) {
-            return handlers.register(app, req.body)
+        async handler(req, reply) {
+            await handlers.register(app, req.body)
+            reply.send()
         }
     })
 

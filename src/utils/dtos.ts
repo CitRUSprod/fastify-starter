@@ -13,11 +13,16 @@ export function user(u: User): JsonObject {
     }
 }
 
-export function post(p: Post): JsonObject {
+export function post(p: Post & { author: User }): JsonObject {
     return {
         id: p.id,
         title: p.title,
         content: p.content,
-        creationDate: p.creationDate.toJSON()
+        author: {
+            id: p.author.id,
+            username: p.author.username
+        },
+        creationDate: p.creationDate.toJSON(),
+        editingDate: p.editingDate?.toJSON() ?? null
     }
 }
