@@ -20,7 +20,7 @@ model User {
     role Role @default(User)
     verified Boolean @default(false)
     banned Boolean @default(false)
-    registrationDate DateTime @default(now())
+    registrationDate DateTime
     refreshTokens RefreshToken[]
 }
 
@@ -29,12 +29,12 @@ model RefreshToken {
     token String @unique
     userId Int
     user User @relation(fields: [userId], references: [id])
-    creationDate DateTime @default(now())
+    creationDate DateTime
 }
 
 model Post {
     id Int @id @default(autoincrement())
     title String
     content String
-    creationDate DateTime @default(now())
+    creationDate DateTime
 }

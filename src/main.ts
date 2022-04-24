@@ -7,13 +7,6 @@ import Ajv from "ajv"
 import ajvKeywords from "ajv-keywords"
 import { decorators } from "./decorators"
 import { routes } from "./routes"
-import { Payload } from "./types"
-
-declare module "fastify-jwt" {
-    interface FastifyJWT {
-        payload: Payload
-    }
-}
 
 const jwtSecret = process.env.JWT_SECRET!
 const enableDocs = process.env.ENABLE_DOCS === "true"

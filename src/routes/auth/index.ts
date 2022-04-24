@@ -11,7 +11,7 @@ export const authRoute: FastifyPluginCallback = (app, options, done) => {
             tags: ["auth"],
             body: schemas.registerBody
         },
-        handler(req) {
+        async handler(req) {
             return handlers.register(app, req.body)
         }
     })
@@ -43,7 +43,7 @@ export const authRoute: FastifyPluginCallback = (app, options, done) => {
             tags: ["auth"]
         },
         preHandler: app.auth([app.isAuthorized]),
-        handler(req) {
+        async handler(req) {
             return handlers.getMe(app, req.user)
         }
     })
@@ -52,6 +52,7 @@ export const authRoute: FastifyPluginCallback = (app, options, done) => {
         schema: {
             tags: ["auth"]
         },
+        preHandler: app.auth([app.isAuthorized]),
         async handler(req, reply) {
             await handlers.logout(app, req.cookies)
             reply.clearCookie("accessToken").clearCookie("refreshToken").send()

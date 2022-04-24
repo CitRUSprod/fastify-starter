@@ -10,7 +10,7 @@ export const postsRoute: FastifyPluginCallback = (app, options, done) => {
             tags: ["posts"],
             querystring: schemas.getPostsQuery
         },
-        handler(req) {
+        async handler(req) {
             return handlers.getPosts(app, req.query)
         }
     })
@@ -21,7 +21,7 @@ export const postsRoute: FastifyPluginCallback = (app, options, done) => {
             tags: ["posts"],
             body: schemas.createPostBody
         },
-        handler(req) {
+        async handler(req) {
             return handlers.createPost(app, req.body)
         }
     })
@@ -32,7 +32,7 @@ export const postsRoute: FastifyPluginCallback = (app, options, done) => {
             tags: ["posts"],
             params: schemas.getPostParams
         },
-        handler(req) {
+        async handler(req) {
             return handlers.getPost(app, req.params)
         }
     })
@@ -44,7 +44,7 @@ export const postsRoute: FastifyPluginCallback = (app, options, done) => {
             params: schemas.updatePostParams,
             body: schemas.updatePostBody
         },
-        handler(req) {
+        async handler(req) {
             return handlers.updatePost(app, req.params, req.body)
         }
     })
@@ -55,7 +55,7 @@ export const postsRoute: FastifyPluginCallback = (app, options, done) => {
             tags: ["posts"],
             params: schemas.deletePostParams
         },
-        handler(req) {
+        async handler(req) {
             return handlers.deletePost(app, req.params)
         }
     })

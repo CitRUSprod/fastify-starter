@@ -1,13 +1,8 @@
 import { FastifyInstance } from "fastify"
-import { BadRequest } from "http-errors"
 import { Prisma } from "@prisma/client"
 import { getItemsPage } from "$/utils"
+import * as utils from "./utils"
 import * as Types from "./types"
-
-async function checkPostById(app: FastifyInstance, id: number) {
-    const post = await app.prisma.post.findFirst({ where: { id } })
-    if (!post) throw new BadRequest("Post with such ID was not found")
-}
 
 export async function getPosts(app: FastifyInstance, query: Types.GetPostsQuery) {
     const page = await getItemsPage(
@@ -33,12 +28,12 @@ export async function getPosts(app: FastifyInstance, query: Types.GetPostsQuery)
 }
 
 export async function createPost(app: FastifyInstance, body: Types.CreatePostBody) {
-    const post = await app.prisma.post.create({ data: body })
+    const post = await app.prisma.post.create({ data: { ...body, creationDate: new Date() } })
     return post
 }
 
 export async function getPost(app: FastifyInstance, params: Types.GetPostParams) {
-    await checkPostById(app, params.id)
+    await utils.checkPost(app, params.id)
     const post = await app.prisma.post.findFirst({ where: { id: params.id } })
     return post
 }
@@ -48,7 +43,7 @@ export async function updatePost(
     params: Types.UpdatePostParams,
     body: Types.UpdatePostBody
 ) {
-    await checkPostById(app, params.id)
+    await utils.checkPost(app, params.id)
 
     const post = await app.prisma.post.update({
         where: { id: params.id },
@@ -59,7 +54,7 @@ export async function updatePost(
 }
 
 export async function deletePost(app: FastifyInstance, params: Types.DeletePostParams) {
-    await checkPostById(app, params.id)
+    await utils.checkPost(app, params.id)
     const post = await app.prisma.post.delete({ where: { id: params.id } })
     return post
 }
