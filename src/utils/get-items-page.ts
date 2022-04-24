@@ -1,11 +1,13 @@
-interface ItemsData<T> {
+import { JsonObject } from "type-fest"
+
+interface ItemsData {
     totalItems: number
-    items: Array<T>
+    items: Array<JsonObject>
 }
 
-export async function getItemsPage<T>(
+export async function getItemsPage(
     { page = 1, perPage = 10, maxPerPage = 100 },
-    getItemsData: (skip: number, take: number) => Promise<ItemsData<T>>
+    getItemsData: (skip: number, take: number) => Promise<ItemsData>
 ) {
     let itemsPerPage: number
 

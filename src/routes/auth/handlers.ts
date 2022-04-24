@@ -1,6 +1,7 @@
 import { FastifyInstance } from "fastify"
 import { BadRequest, Unauthorized, InternalServerError } from "http-errors"
 import argon2 from "argon2"
+import { dtos } from "$/utils"
 import { Payload } from "$/types"
 import * as Types from "./types"
 import * as utils from "./utils"
@@ -13,11 +14,9 @@ export async function register(app: FastifyInstance, body: Types.RegisterBody) {
     if (userByUsername) throw new BadRequest("User with such username already exists")
 
     const password = await argon2.hash(body.password)
-    const user = app.prisma.user.create({
+    await app.prisma.user.create({
         data: { email: body.email, username: body.username, password, registrationDate: new Date() }
     })
-
-    return user
 }
 
 export async function login(app: FastifyInstance, body: Types.LoginBody) {
@@ -39,7 +38,7 @@ export async function login(app: FastifyInstance, body: Types.LoginBody) {
 
 export async function getMe(app: FastifyInstance, payload: Payload) {
     const user = await app.getUser(payload.id)
-    return user
+    return dtos.user(user)
 }
 
 export async function logout(app: FastifyInstance, cookies: Types.LogoutCookies) {

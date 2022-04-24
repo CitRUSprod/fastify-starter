@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify"
 import { Prisma } from "@prisma/client"
-import { getItemsPage } from "$/utils"
+import { dtos, getItemsPage } from "$/utils"
 import * as utils from "./utils"
 import * as Types from "./types"
 
@@ -20,7 +20,7 @@ export async function getPosts(app: FastifyInstance, query: Types.GetPostsQuery)
                 orderBy: query.sort && { [query.sort]: query.order ?? "asc" }
             })
 
-            return { totalItems, items: posts }
+            return { totalItems, items: posts.map(dtos.post) }
         }
     )
 
@@ -29,13 +29,13 @@ export async function getPosts(app: FastifyInstance, query: Types.GetPostsQuery)
 
 export async function createPost(app: FastifyInstance, body: Types.CreatePostBody) {
     const post = await app.prisma.post.create({ data: { ...body, creationDate: new Date() } })
-    return post
+    return dtos.post(post)
 }
 
 export async function getPost(app: FastifyInstance, params: Types.GetPostParams) {
     await utils.checkPost(app, params.id)
-    const post = await app.prisma.post.findFirst({ where: { id: params.id } })
-    return post
+    const post = (await app.prisma.post.findFirst({ where: { id: params.id } }))!
+    return dtos.post(post)
 }
 
 export async function updatePost(
@@ -50,11 +50,11 @@ export async function updatePost(
         data: { title: body.title, content: body.content }
     })
 
-    return post
+    return dtos.post(post)
 }
 
 export async function deletePost(app: FastifyInstance, params: Types.DeletePostParams) {
     await utils.checkPost(app, params.id)
     const post = await app.prisma.post.delete({ where: { id: params.id } })
-    return post
+    return dtos.post(post)
 }
