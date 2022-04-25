@@ -5,7 +5,7 @@ export const registerBody: JSONSchemaType<Types.RegisterBody> = {
     type: "object",
     properties: {
         email: { type: "string", minLength: 6, transform: ["trim", "toLowerCase"] },
-        username: { type: "string", minLength: 6, maxLength: 32, transform: ["trim"] },
+        username: { type: "string", minLength: 3, maxLength: 32, transform: ["trim"] },
         password: { type: "string", minLength: 8 }
     },
     required: ["email", "username", "password"],
