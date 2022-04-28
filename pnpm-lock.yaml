@@ -5,6 +5,7 @@ specifiers:
   '@citrus-linting/prettier-config': 0.5.0
   '@commitlint/cli': 16.2.3
   '@prisma/client': 3.12.0
+  '@sinclair/typebox': 0.23.4
   '@swc/core': 1.2.165
   '@types/eslint': 8.4.1
   '@types/http-errors': 1.8.2
@@ -47,6 +48,7 @@ specifiers:
 
 dependencies:
   '@prisma/client': 3.12.0_prisma@3.12.0
+  '@sinclair/typebox': 0.23.4
   ajv: 8.11.0
   ajv-keywords: 5.1.0_ajv@8.11.0
   argon2: 0.28.5
@@ -396,6 +398,10 @@ packages:
     resolution: {integrity: sha512-zULjkN8yhzS7B3yeEz4aIym4E2w1ChrV12i14pht3ePFufvsAvBSoZ+tuXMvfSoNTgBS5E4bolRzLbMmbwkkMQ==}
     requiresBuild: true
     dev: true
+
+  /@sinclair/typebox/0.23.4:
+    resolution: {integrity: sha512-0/WqSvpVbCBAV1yPeko7eAczKbs78dNVAaX14quVlwOb2wxfKuXCx91h4NrEfkYK9zEnyVSW4JVI/trP3iS+Qg==}
+    dev: false
 
   /@swc/core-android-arm-eabi/1.2.165:
     resolution: {integrity: sha512-DjX1/5qElHOnlrqhefcZsD1LEspJWDLpW31SKv9cNT2T13U76MkcrHi5ePI50NhG/bWDpHuWFWfuEmgcU+mwHA==}

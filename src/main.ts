@@ -5,13 +5,9 @@ import cookie from "fastify-cookie"
 import auth from "fastify-auth"
 import Ajv from "ajv"
 import ajvKeywords from "ajv-keywords"
-import { decorators } from "./decorators"
-import { routes } from "./routes"
-
-const jwtSecret = process.env.JWT_SECRET!
-const enableDocs = process.env.ENABLE_DOCS === "true"
-
-const port = 6500
+import { getEnv } from "$/utils"
+import { decorators } from "$/decorators"
+import { routes } from "$/routes"
 
 const ajv = new Ajv({
     removeAdditional: true,
@@ -21,11 +17,15 @@ const ajv = new Ajv({
 
 ajvKeywords(ajv, ["transform"])
 
+const env = getEnv(ajv)
+
+const port = 6500
+
 const app = fastify()
 
 app.setValidatorCompiler(({ schema }) => ajv.compile(schema) as any)
 
-if (enableDocs) {
+if (env.ENABLE_DOCS) {
     app.register(swagger, {
         routePrefix: "/docs",
         swagger: {
@@ -39,7 +39,7 @@ if (enableDocs) {
     })
 }
 
-app.register(jwt, { secret: jwtSecret, cookie: { cookieName: "accessToken", signed: false } })
+app.register(jwt, { secret: env.JWT_SECRET, cookie: { cookieName: "accessToken", signed: false } })
     .register(cookie)
     .register(auth)
 
