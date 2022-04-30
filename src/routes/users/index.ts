@@ -2,11 +2,10 @@ import { FastifyPluginCallback } from "fastify"
 import { Role } from "@prisma/client"
 import * as schemas from "./schemas"
 import * as handlers from "./handlers"
-import * as Types from "./types"
 
 export const usersRoute: FastifyPluginCallback = (app, options, done) => {
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    app.get<{ Querystring: Types.GetUsersQuery }>("/", {
+    app.get<{ Querystring: schemas.GetUsersQuery }>("/", {
         schema: {
             tags: ["users"],
             querystring: schemas.getUsersQuery
@@ -18,7 +17,7 @@ export const usersRoute: FastifyPluginCallback = (app, options, done) => {
     })
 
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    app.get<{ Params: Types.GetUserParams }>("/:id", {
+    app.get<{ Params: schemas.GetUserParams }>("/:id", {
         schema: {
             tags: ["users"],
             params: schemas.getUserParams
@@ -29,7 +28,7 @@ export const usersRoute: FastifyPluginCallback = (app, options, done) => {
     })
 
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    app.patch<{ Params: Types.UpdateUserParams; Body: Types.UpdateUserBody }>("/:id", {
+    app.patch<{ Params: schemas.UpdateUserParams; Body: schemas.UpdateUserBody }>("/:id", {
         schema: {
             tags: ["users"],
             params: schemas.updateUserParams,

@@ -3,9 +3,9 @@ import { MethodNotAllowed } from "http-errors"
 import { Prisma, Role } from "@prisma/client"
 import { dtos, getItemsPage, hasAccess } from "$/utils"
 import { Payload } from "$/types"
-import * as Types from "./types"
+import * as schemas from "./schemas"
 
-export async function getUsers(app: FastifyInstance, query: Types.GetUsersQuery) {
+export async function getUsers(app: FastifyInstance, query: schemas.GetUsersQuery) {
     const page = await getItemsPage(
         { page: query.page, perPage: query.perPage },
         async (skip, take) => {
@@ -29,7 +29,7 @@ export async function getUsers(app: FastifyInstance, query: Types.GetUsersQuery)
     return page
 }
 
-export async function getUser(app: FastifyInstance, params: Types.GetUserParams) {
+export async function getUser(app: FastifyInstance, params: schemas.GetUserParams) {
     const user = await app.getUser(params.id)
     return dtos.user(user)
 }
@@ -37,8 +37,8 @@ export async function getUser(app: FastifyInstance, params: Types.GetUserParams)
 export async function updateUser(
     app: FastifyInstance,
     payload: Payload,
-    params: Types.UpdateUserParams,
-    body: Types.UpdateUserBody
+    params: schemas.UpdateUserParams,
+    body: schemas.UpdateUserBody
 ) {
     const user = await app.getUser(params.id)
     const userRequester = await app.getUser(payload.id)

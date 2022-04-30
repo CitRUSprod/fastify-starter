@@ -2,11 +2,10 @@ import { FastifyPluginCallback } from "fastify"
 import { TokenTtl } from "$/enums"
 import * as schemas from "./schemas"
 import * as handlers from "./handlers"
-import * as Types from "./types"
 
 export const authRoute: FastifyPluginCallback = (app, options, done) => {
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    app.post<{ Body: Types.RegisterBody }>("/register", {
+    app.post<{ Body: schemas.RegisterBody }>("/register", {
         schema: {
             tags: ["auth"],
             body: schemas.registerBody
@@ -18,7 +17,7 @@ export const authRoute: FastifyPluginCallback = (app, options, done) => {
     })
 
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    app.post<{ Body: Types.LoginBody }>("/login", {
+    app.post<{ Body: schemas.LoginBody }>("/login", {
         schema: {
             tags: ["auth"],
             body: schemas.loginBody
