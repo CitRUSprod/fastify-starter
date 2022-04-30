@@ -3,10 +3,10 @@ import { MethodNotAllowed } from "http-errors"
 import { Prisma, Role } from "@prisma/client"
 import { dtos, getItemsPage, hasAccess } from "$/utils"
 import { Payload } from "$/types"
+import * as schemas from "./schemas"
 import * as utils from "./utils"
-import * as Types from "./types"
 
-export async function getPosts(app: FastifyInstance, query: Types.GetPostsQuery) {
+export async function getPosts(app: FastifyInstance, query: schemas.GetPostsQuery) {
     const page = await getItemsPage(
         { page: query.page, perPage: query.perPage },
         async (skip, take) => {
@@ -33,7 +33,7 @@ export async function getPosts(app: FastifyInstance, query: Types.GetPostsQuery)
 export async function createPost(
     app: FastifyInstance,
     payload: Payload,
-    body: Types.CreatePostBody
+    body: schemas.CreatePostBody
 ) {
     const user = await app.getUser(payload.id)
     const post = await app.prisma.post.create({
@@ -44,7 +44,7 @@ export async function createPost(
     return dtos.post(post)
 }
 
-export async function getPost(app: FastifyInstance, params: Types.GetPostParams) {
+export async function getPost(app: FastifyInstance, params: schemas.GetPostParams) {
     await utils.getPost(app, params.id)
 
     const post = (await app.prisma.post.findFirst({
@@ -58,8 +58,8 @@ export async function getPost(app: FastifyInstance, params: Types.GetPostParams)
 export async function updatePost(
     app: FastifyInstance,
     payload: Payload,
-    params: Types.UpdatePostParams,
-    body: Types.UpdatePostBody
+    params: schemas.UpdatePostParams,
+    body: schemas.UpdatePostBody
 ) {
     const post = await utils.getPost(app, params.id)
     const user = await app.getUser(payload.id)
@@ -80,7 +80,7 @@ export async function updatePost(
 export async function deletePost(
     app: FastifyInstance,
     payload: Payload,
-    params: Types.DeletePostParams
+    params: schemas.DeletePostParams
 ) {
     const post = await utils.getPost(app, params.id)
     const user = await app.getUser(payload.id)

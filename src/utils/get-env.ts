@@ -1,5 +1,5 @@
 import Ajv from "ajv"
-import { Static, Type } from "@sinclair/typebox"
+import { Type, Static } from "@sinclair/typebox"
 
 const envSchema = Type.Strict(
     Type.Object(

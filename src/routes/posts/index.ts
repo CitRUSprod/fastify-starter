@@ -1,11 +1,10 @@
 import { FastifyPluginCallback } from "fastify"
 import * as schemas from "./schemas"
 import * as handlers from "./handlers"
-import * as Types from "./types"
 
 export const postsRoute: FastifyPluginCallback = (app, options, done) => {
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    app.get<{ Querystring: Types.GetPostsQuery }>("/", {
+    app.get<{ Querystring: schemas.GetPostsQuery }>("/", {
         schema: {
             tags: ["posts"],
             querystring: schemas.getPostsQuery
@@ -16,7 +15,7 @@ export const postsRoute: FastifyPluginCallback = (app, options, done) => {
     })
 
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    app.post<{ Body: Types.CreatePostBody }>("/", {
+    app.post<{ Body: schemas.CreatePostBody }>("/", {
         schema: {
             tags: ["posts"],
             body: schemas.createPostBody
@@ -28,7 +27,7 @@ export const postsRoute: FastifyPluginCallback = (app, options, done) => {
     })
 
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    app.get<{ Params: Types.GetPostParams }>("/:id", {
+    app.get<{ Params: schemas.GetPostParams }>("/:id", {
         schema: {
             tags: ["posts"],
             params: schemas.getPostParams
@@ -39,7 +38,7 @@ export const postsRoute: FastifyPluginCallback = (app, options, done) => {
     })
 
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    app.patch<{ Params: Types.UpdatePostParams; Body: Types.UpdatePostBody }>("/:id", {
+    app.patch<{ Params: schemas.UpdatePostParams; Body: schemas.UpdatePostBody }>("/:id", {
         schema: {
             tags: ["posts"],
             params: schemas.updatePostParams,
@@ -52,7 +51,7 @@ export const postsRoute: FastifyPluginCallback = (app, options, done) => {
     })
 
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    app.delete<{ Params: Types.DeletePostParams }>("/:id", {
+    app.delete<{ Params: schemas.DeletePostParams }>("/:id", {
         schema: {
             tags: ["posts"],
             params: schemas.deletePostParams

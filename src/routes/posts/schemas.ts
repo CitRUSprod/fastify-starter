@@ -1,70 +1,75 @@
-import { JSONSchemaType } from "ajv"
-import * as Types from "./types"
+import { Type, Static } from "@sinclair/typebox"
+import * as schemas from "$/schemas"
 
-export const getPostsQuery: JSONSchemaType<Types.GetPostsQuery> = {
-    type: "object",
-    properties: {
-        page: { type: "integer", nullable: true },
-        perPage: { type: "integer", nullable: true },
-        sort: {
-            type: "string",
-            nullable: true,
-            enum: ["title", "creationDate"],
-            transform: ["trim"]
+const title = Type.String({ minLength: 1, maxLength: 64, transform: ["trim"] })
+const content = Type.String({ minLength: 1, transform: ["trim"] })
+
+export const getPostsQuery = Type.Strict(
+    Type.Object(
+        {
+            ...schemas.pagination(),
+            ...schemas.sorting("title", "creationDate"),
+            title: Type.Optional(title)
         },
-        order: {
-            type: "string",
-            nullable: true,
-            enum: ["asc", "desc"],
-            transform: ["trim", "toLowerCase"]
+        { additionalProperties: false }
+    )
+)
+
+export type GetPostsQuery = Static<typeof getPostsQuery>
+
+export const createPostBody = Type.Strict(
+    Type.Object(
+        {
+            title,
+            content
         },
-        title: { type: "string", nullable: true, minLength: 1, transform: ["trim"] }
-    },
-    additionalProperties: false
-}
+        { additionalProperties: false }
+    )
+)
 
-export const createPostBody: JSONSchemaType<Types.CreatePostBody> = {
-    type: "object",
-    properties: {
-        title: { type: "string", minLength: 1, maxLength: 64, transform: ["trim"] },
-        content: { type: "string", minLength: 1, transform: ["trim"] }
-    },
-    required: ["title", "content"],
-    additionalProperties: false
-}
+export type CreatePostBody = Static<typeof createPostBody>
 
-export const getPostParams: JSONSchemaType<Types.GetPostParams> = {
-    type: "object",
-    properties: {
-        id: { type: "integer" }
-    },
-    required: ["id"],
-    additionalProperties: false
-}
+export const getPostParams = Type.Strict(
+    Type.Object(
+        {
+            ...schemas.id()
+        },
+        { additionalProperties: false }
+    )
+)
 
-export const updatePostParams: JSONSchemaType<Types.UpdatePostParams> = {
-    type: "object",
-    properties: {
-        id: { type: "integer" }
-    },
-    required: ["id"],
-    additionalProperties: false
-}
+export type GetPostParams = Static<typeof getPostParams>
 
-export const updatePostBody: JSONSchemaType<Types.UpdatePostBody> = {
-    type: "object",
-    properties: {
-        title: { type: "string", nullable: true, minLength: 1, maxLength: 64, transform: ["trim"] },
-        content: { type: "string", nullable: true, minLength: 1, transform: ["trim"] }
-    },
-    additionalProperties: false
-}
+export const updatePostParams = Type.Strict(
+    Type.Object(
+        {
+            ...schemas.id()
+        },
+        { additionalProperties: false }
+    )
+)
 
-export const deletePostParams: JSONSchemaType<Types.DeletePostParams> = {
-    type: "object",
-    properties: {
-        id: { type: "integer" }
-    },
-    required: ["id"],
-    additionalProperties: false
-}
+export type UpdatePostParams = Static<typeof updatePostParams>
+
+export const updatePostBody = Type.Strict(
+    Type.Object(
+        {
+            title: Type.Optional(title),
+            content: Type.Optional(content)
+        },
+        { additionalProperties: false }
+    )
+)
+
+export type UpdatePostBody = Static<typeof updatePostBody>
+
+export const deletePostParams = Type.Strict(
+    Type.Object(
+        {
+            ...schemas.id()
+        },
+        { additionalProperties: false }
+    )
+)
+
+export type DeletePostParams = Static<typeof deletePostParams>
