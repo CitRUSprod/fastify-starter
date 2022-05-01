@@ -5,25 +5,22 @@ import { UserPayload, RouteHandler } from "$/types"
 import * as schemas from "./schemas"
 
 export const getUsers: RouteHandler<{ query: schemas.GetUsersQuery }> = async (app, { query }) => {
-    const page = await getItemsPage(
-        { page: query.page, perPage: query.perPage },
-        async (skip, take) => {
-            const where: Prisma.UserWhereInput = {
-                email: { contains: query.email, mode: "insensitive" },
-                username: { contains: query.username, mode: "insensitive" }
-            }
-
-            const totalItems = await app.prisma.user.count({ where })
-            const users = await app.prisma.user.findMany({
-                skip,
-                take,
-                where,
-                orderBy: query.sort && { [query.sort]: query.order ?? "asc" }
-            })
-
-            return { totalItems, items: users.map(dtos.user) }
+    const page = await getItemsPage(query.page, query.perPage, async (skip, take) => {
+        const where: Prisma.UserWhereInput = {
+            email: { contains: query.email, mode: "insensitive" },
+            username: { contains: query.username, mode: "insensitive" }
         }
-    )
+
+        const totalItems = await app.prisma.user.count({ where })
+        const users = await app.prisma.user.findMany({
+            skip,
+            take,
+            where,
+            orderBy: query.sort && { [query.sort]: query.order ?? "asc" }
+        })
+
+        return { totalItems, items: users.map(dtos.user) }
+    })
 
     return { payload: page }
 }

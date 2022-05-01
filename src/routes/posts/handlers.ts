@@ -6,25 +6,22 @@ import * as schemas from "./schemas"
 import * as utils from "./utils"
 
 export const getPosts: RouteHandler<{ query: schemas.GetPostsQuery }> = async (app, { query }) => {
-    const page = await getItemsPage(
-        { page: query.page, perPage: query.perPage },
-        async (skip, take) => {
-            const where: Prisma.PostWhereInput = {
-                title: { contains: query.title, mode: "insensitive" }
-            }
-
-            const totalItems = await app.prisma.post.count({ where })
-            const posts = await app.prisma.post.findMany({
-                skip,
-                take,
-                where,
-                orderBy: query.sort && { [query.sort]: query.order ?? "asc" },
-                include: { author: true }
-            })
-
-            return { totalItems, items: posts.map(dtos.post) }
+    const page = await getItemsPage(query.page, query.perPage, async (skip, take) => {
+        const where: Prisma.PostWhereInput = {
+            title: { contains: query.title, mode: "insensitive" }
         }
-    )
+
+        const totalItems = await app.prisma.post.count({ where })
+        const posts = await app.prisma.post.findMany({
+            skip,
+            take,
+            where,
+            orderBy: query.sort && { [query.sort]: query.order ?? "asc" },
+            include: { author: true }
+        })
+
+        return { totalItems, items: posts.map(dtos.post) }
+    })
 
     return { payload: page }
 }
