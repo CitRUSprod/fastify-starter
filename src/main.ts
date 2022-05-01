@@ -3,33 +3,19 @@ import swagger from "fastify-swagger"
 import jwt from "fastify-jwt"
 import cookie from "fastify-cookie"
 import auth from "fastify-auth"
-import Ajv, { ErrorObject } from "ajv"
-import ajvKeywords from "ajv-keywords"
-import { AggregateAjvError } from "@segment/ajv-human-errors"
-import { getEnv } from "$/utils"
 import { decorators } from "$/decorators"
 import { routes } from "$/routes"
+import * as schemas from "$/schemas"
+import { ajv, normalizeAjvErrors, parseByAjvSchema } from "$/utils"
 
-const ajv = new Ajv({
-    removeAdditional: true,
-    useDefaults: true,
-    coerceTypes: true
-})
-
-ajvKeywords(ajv, ["transform"])
-
-const env = getEnv(ajv)
+const env = parseByAjvSchema(schemas.env, process.env, "env")
 
 const port = 6500
 
 const app = fastify()
 
 app.setValidatorCompiler(({ schema }) => ajv.compile(schema) as any)
-app.setSchemaErrorFormatter((errors, dataVar) => {
-    const humanErrors = new AggregateAjvError(errors as any) as any
-    const err = humanErrors.errors[0] as ErrorObject
-    return new Error(`[${dataVar}] ${err.message!}`)
-})
+app.setSchemaErrorFormatter((errors, scope) => normalizeAjvErrors(errors as any, scope))
 
 if (env.ENABLE_DOCS) {
     app.register(swagger, {

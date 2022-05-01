@@ -1,4 +1,4 @@
-import { BadRequest, Unauthorized, InternalServerError } from "http-errors"
+import { BadRequest, InternalServerError } from "http-errors"
 import argon2 from "argon2"
 import { TokenTtl } from "$/enums"
 import { dtos } from "$/utils"
@@ -61,11 +61,9 @@ export const logout: RouteHandler<{ cookies: schemas.LogoutCookies }> = async (
     { cookies }
 ) => {
     const localCookies: Array<ReplyCookie> = [
-        { name: "accessToken", value: undefined },
-        { name: "refreshToken", value: undefined }
+        { name: "accessToken", value: undefined, options: { path: "/" } },
+        { name: "refreshToken", value: undefined, options: { path: "/" } }
     ]
-
-    if (!cookies.refreshToken) throw new Unauthorized("Refresh token is not defined")
 
     const refreshToken = await app.prisma.refreshToken.findFirst({
         where: { token: cookies.refreshToken }
@@ -89,8 +87,6 @@ export const refresh: RouteHandler<{ cookies: schemas.RefreshCookies }> = async 
     app,
     { cookies }
 ) => {
-    if (!cookies.refreshToken) throw new Unauthorized("Refresh token is not defined")
-
     const payload = utils.getPayload(app, cookies.refreshToken)
 
     const refreshToken = await app.prisma.refreshToken.findFirst({

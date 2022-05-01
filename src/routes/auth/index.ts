@@ -1,4 +1,6 @@
 import { FastifyPluginCallback } from "fastify"
+import { Unauthorized } from "http-errors"
+import { parseByAjvSchema } from "$/utils"
 import * as schemas from "./schemas"
 import * as handlers from "./handlers"
 
@@ -42,9 +44,16 @@ export const authRoute: FastifyPluginCallback = (app, options, done) => {
         schema: {
             tags: ["auth"]
         },
-        preHandler: app.auth([app.isAuthorized]),
         async handler(req, reply) {
-            const data = await handlers.logout(app, { cookies: req.cookies })
+            let cookies: schemas.LogoutCookies
+
+            try {
+                cookies = parseByAjvSchema(schemas.logoutCookies, req.cookies, "cookies")
+            } catch (err: any) {
+                throw new Unauthorized(err.message)
+            }
+
+            const data = await handlers.logout(app, { cookies })
             await reply.sendData(data)
         }
     })
@@ -54,7 +63,15 @@ export const authRoute: FastifyPluginCallback = (app, options, done) => {
             tags: ["auth"]
         },
         async handler(req, reply) {
-            const data = await handlers.refresh(app, { cookies: req.cookies })
+            let cookies: schemas.RefreshCookies
+
+            try {
+                cookies = parseByAjvSchema(schemas.refreshCookies, req.cookies, "cookies")
+            } catch (err: any) {
+                throw new Unauthorized(err.message)
+            }
+
+            const data = await handlers.refresh(app, { cookies })
             await reply.sendData(data)
         }
     })

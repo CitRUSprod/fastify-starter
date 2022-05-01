@@ -2,7 +2,7 @@ import { Type, Static } from "@sinclair/typebox"
 import * as schemas from "$/schemas"
 
 function refreshToken() {
-    return Type.Optional(Type.String())
+    return Type.String()
 }
 
 export const registerBody = Type.Strict(
