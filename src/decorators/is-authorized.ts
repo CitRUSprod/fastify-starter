@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyPluginCallback } from "fastify"
 import { FastifyAuthFunction } from "fastify-auth"
-import { Payload } from "$/types"
+import { UserPayload } from "$/types"
 
 declare module "fastify" {
     interface FastifyInstance {
@@ -10,7 +10,7 @@ declare module "fastify" {
 
 declare module "fastify-jwt" {
     interface FastifyJWT {
-        payload: Payload
+        payload: UserPayload
     }
 }
 

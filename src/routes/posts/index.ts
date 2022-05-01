@@ -9,8 +9,9 @@ export const postsRoute: FastifyPluginCallback = (app, options, done) => {
             tags: ["posts"],
             querystring: schemas.getPostsQuery
         },
-        async handler(req) {
-            return handlers.getPosts(app, req.query)
+        async handler(req, reply) {
+            const data = await handlers.getPosts(app, { query: req.query })
+            await reply.sendData(data)
         }
     })
 
@@ -21,8 +22,9 @@ export const postsRoute: FastifyPluginCallback = (app, options, done) => {
             body: schemas.createPostBody
         },
         preHandler: app.auth([app.isAuthorized]),
-        async handler(req) {
-            return handlers.createPost(app, req.user, req.body)
+        async handler(req, reply) {
+            const data = await handlers.createPost(app, { payload: req.user, body: req.body })
+            await reply.sendData(data)
         }
     })
 
@@ -32,8 +34,9 @@ export const postsRoute: FastifyPluginCallback = (app, options, done) => {
             tags: ["posts"],
             params: schemas.getPostParams
         },
-        async handler(req) {
-            return handlers.getPost(app, req.params)
+        async handler(req, reply) {
+            const data = await handlers.getPost(app, { params: req.params })
+            await reply.sendData(data)
         }
     })
 
@@ -45,8 +48,13 @@ export const postsRoute: FastifyPluginCallback = (app, options, done) => {
             body: schemas.updatePostBody
         },
         preHandler: app.auth([app.isAuthorized]),
-        async handler(req) {
-            return handlers.updatePost(app, req.user, req.params, req.body)
+        async handler(req, reply) {
+            const data = await handlers.updatePost(app, {
+                payload: req.user,
+                params: req.params,
+                body: req.body
+            })
+            await reply.sendData(data)
         }
     })
 
@@ -57,8 +65,9 @@ export const postsRoute: FastifyPluginCallback = (app, options, done) => {
             params: schemas.deletePostParams
         },
         preHandler: app.auth([app.isAuthorized]),
-        async handler(req) {
-            return handlers.deletePost(app, req.user, req.params)
+        async handler(req, reply) {
+            const data = await handlers.deletePost(app, { payload: req.user, params: req.params })
+            await reply.sendData(data)
         }
     })
 

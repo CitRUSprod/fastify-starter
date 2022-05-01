@@ -1,20 +1,20 @@
 import { FastifyInstance } from "fastify"
 import { Unauthorized } from "http-errors"
 import { TokenTtl } from "$/enums"
-import { Payload } from "$/types"
+import { UserPayload } from "$/types"
 
-interface PayloadWithTimestamps extends Payload {
+interface PayloadWithTimestamps extends UserPayload {
     iat: string
     exp: string
 }
 
-export function generateTokens(app: FastifyInstance, payload: Payload) {
+export function generateTokens(app: FastifyInstance, payload: UserPayload) {
     const access = app.jwt.sign(payload, { expiresIn: TokenTtl.Access })
     const refresh = app.jwt.sign(payload, { expiresIn: TokenTtl.Refresh })
     return { access, refresh }
 }
 
-export function getPayload(app: FastifyInstance, token: string): Payload {
+export function getPayload(app: FastifyInstance, token: string): UserPayload {
     try {
         const { iat, exp, ...payload } = app.jwt.verify<PayloadWithTimestamps>(token)
         return payload

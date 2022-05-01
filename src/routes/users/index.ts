@@ -11,8 +11,9 @@ export const usersRoute: FastifyPluginCallback = (app, options, done) => {
             querystring: schemas.getUsersQuery
         },
         preHandler: app.auth([app.isAuthorized, app.hasAccess(Role.Admin)], { relation: "and" }),
-        async handler(req) {
-            return handlers.getUsers(app, req.query)
+        async handler(req, reply) {
+            const data = await handlers.getUsers(app, { query: req.query })
+            await reply.sendData(data)
         }
     })
 
@@ -22,8 +23,9 @@ export const usersRoute: FastifyPluginCallback = (app, options, done) => {
             tags: ["users"],
             params: schemas.getUserParams
         },
-        async handler(req) {
-            return handlers.getUser(app, req.params)
+        async handler(req, reply) {
+            const data = await handlers.getUser(app, { params: req.params })
+            await reply.sendData(data)
         }
     })
 
@@ -35,8 +37,13 @@ export const usersRoute: FastifyPluginCallback = (app, options, done) => {
             body: schemas.updateUserBody
         },
         preHandler: app.auth([app.isAuthorized]),
-        async handler(req) {
-            return handlers.updateUser(app, req.user, req.params, req.body)
+        async handler(req, reply) {
+            const data = await handlers.updateUser(app, {
+                payload: req.user,
+                params: req.params,
+                body: req.body
+            })
+            await reply.sendData(data)
         }
     })
 

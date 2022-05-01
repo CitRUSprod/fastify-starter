@@ -1,5 +1,4 @@
 import { FastifyPluginCallback } from "fastify"
-import { TokenTtl } from "$/enums"
 import * as schemas from "./schemas"
 import * as handlers from "./handlers"
 
@@ -11,8 +10,8 @@ export const authRoute: FastifyPluginCallback = (app, options, done) => {
             body: schemas.registerBody
         },
         async handler(req, reply) {
-            await handlers.register(app, req.body)
-            reply.send()
+            const data = await handlers.register(app, { body: req.body })
+            await reply.sendData(data)
         }
     })
 
@@ -23,18 +22,8 @@ export const authRoute: FastifyPluginCallback = (app, options, done) => {
             body: schemas.loginBody
         },
         async handler(req, reply) {
-            const tokens = await handlers.login(app, req.body)
-            reply
-                .setCookie("accessToken", tokens.access, {
-                    path: "/",
-                    maxAge: TokenTtl.Access
-                })
-                .setCookie("refreshToken", tokens.refresh, {
-                    path: "/",
-                    maxAge: TokenTtl.Refresh,
-                    httpOnly: true
-                })
-                .send()
+            const data = await handlers.login(app, { body: req.body })
+            await reply.sendData(data)
         }
     })
 
@@ -43,8 +32,9 @@ export const authRoute: FastifyPluginCallback = (app, options, done) => {
             tags: ["auth"]
         },
         preHandler: app.auth([app.isAuthorized]),
-        async handler(req) {
-            return handlers.getMe(app, req.user)
+        async handler(req, reply) {
+            const data = await handlers.getMe(app, { payload: req.user })
+            await reply.sendData(data)
         }
     })
 
@@ -54,8 +44,8 @@ export const authRoute: FastifyPluginCallback = (app, options, done) => {
         },
         preHandler: app.auth([app.isAuthorized]),
         async handler(req, reply) {
-            await handlers.logout(app, req.cookies)
-            reply.clearCookie("accessToken").clearCookie("refreshToken").send()
+            const data = await handlers.logout(app, { cookies: req.cookies })
+            await reply.sendData(data)
         }
     })
 
@@ -64,18 +54,8 @@ export const authRoute: FastifyPluginCallback = (app, options, done) => {
             tags: ["auth"]
         },
         async handler(req, reply) {
-            const tokens = await handlers.refresh(app, req.cookies)
-            reply
-                .setCookie("accessToken", tokens.access, {
-                    path: "/",
-                    maxAge: TokenTtl.Access
-                })
-                .setCookie("refreshToken", tokens.refresh, {
-                    path: "/",
-                    maxAge: TokenTtl.Refresh,
-                    httpOnly: true
-                })
-                .send()
+            const data = await handlers.refresh(app, { cookies: req.cookies })
+            await reply.sendData(data)
         }
     })
 

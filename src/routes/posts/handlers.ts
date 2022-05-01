@@ -1,12 +1,11 @@
-import { FastifyInstance } from "fastify"
 import { MethodNotAllowed } from "http-errors"
 import { Prisma, Role } from "@prisma/client"
 import { dtos, getItemsPage, hasAccess } from "$/utils"
-import { Payload } from "$/types"
+import { UserPayload, RouteHandler } from "$/types"
 import * as schemas from "./schemas"
 import * as utils from "./utils"
 
-export async function getPosts(app: FastifyInstance, query: schemas.GetPostsQuery) {
+export const getPosts: RouteHandler<{ query: schemas.GetPostsQuery }> = async (app, { query }) => {
     const page = await getItemsPage(
         { page: query.page, perPage: query.perPage },
         async (skip, take) => {
@@ -27,24 +26,23 @@ export async function getPosts(app: FastifyInstance, query: schemas.GetPostsQuer
         }
     )
 
-    return page
+    return { payload: page }
 }
 
-export async function createPost(
-    app: FastifyInstance,
-    payload: Payload,
+export const createPost: RouteHandler<{
+    payload: UserPayload
     body: schemas.CreatePostBody
-) {
+}> = async (app, { payload, body }) => {
     const user = await app.getUser(payload.id)
     const post = await app.prisma.post.create({
         data: { ...body, authorId: user.id, creationDate: new Date() },
         include: { author: true }
     })
 
-    return dtos.post(post)
+    return { payload: dtos.post(post) }
 }
 
-export async function getPost(app: FastifyInstance, params: schemas.GetPostParams) {
+export const getPost: RouteHandler<{ params: schemas.GetPostParams }> = async (app, { params }) => {
     await utils.getPost(app, params.id)
 
     const post = (await app.prisma.post.findFirst({
@@ -52,15 +50,14 @@ export async function getPost(app: FastifyInstance, params: schemas.GetPostParam
         include: { author: true }
     }))!
 
-    return dtos.post(post)
+    return { payload: dtos.post(post) }
 }
 
-export async function updatePost(
-    app: FastifyInstance,
-    payload: Payload,
-    params: schemas.UpdatePostParams,
+export const updatePost: RouteHandler<{
+    payload: UserPayload
+    params: schemas.UpdatePostParams
     body: schemas.UpdatePostBody
-) {
+}> = async (app, { payload, params, body }) => {
     const post = await utils.getPost(app, params.id)
     const user = await app.getUser(payload.id)
 
@@ -71,17 +68,16 @@ export async function updatePost(
             include: { author: true }
         })
 
-        return dtos.post(updatedPost)
+        return { payload: dtos.post(updatedPost) }
     } else {
         throw new MethodNotAllowed("No access")
     }
 }
 
-export async function deletePost(
-    app: FastifyInstance,
-    payload: Payload,
+export const deletePost: RouteHandler<{
+    payload: UserPayload
     params: schemas.DeletePostParams
-) {
+}> = async (app, { payload, params }) => {
     const post = await utils.getPost(app, params.id)
     const user = await app.getUser(payload.id)
 
@@ -91,7 +87,7 @@ export async function deletePost(
             include: { author: true }
         })
 
-        return dtos.post(deletedPost)
+        return { payload: dtos.post(deletedPost) }
     } else {
         throw new MethodNotAllowed("No access")
     }

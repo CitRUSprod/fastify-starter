@@ -1,13 +1,12 @@
-import { FastifyInstance } from "fastify"
 import { BadRequest, Unauthorized, InternalServerError } from "http-errors"
 import argon2 from "argon2"
+import { TokenTtl } from "$/enums"
 import { dtos } from "$/utils"
-import { Payload } from "$/types"
+import { UserPayload, ReplyCookie, RouteHandler } from "$/types"
 import * as schemas from "./schemas"
 import * as utils from "./utils"
-import * as Types from "./types"
 
-export async function register(app: FastifyInstance, body: schemas.RegisterBody) {
+export const register: RouteHandler<{ body: schemas.RegisterBody }> = async (app, { body }) => {
     const userByEmail = await app.prisma.user.findFirst({ where: { email: body.email } })
     if (userByEmail) throw new BadRequest("User with such email already exists")
 
@@ -18,9 +17,11 @@ export async function register(app: FastifyInstance, body: schemas.RegisterBody)
     await app.prisma.user.create({
         data: { email: body.email, username: body.username, password, registrationDate: new Date() }
     })
+
+    return {}
 }
 
-export async function login(app: FastifyInstance, body: schemas.LoginBody) {
+export const login: RouteHandler<{ body: schemas.LoginBody }> = async (app, { body }) => {
     const user = await app.prisma.user.findFirst({ where: { email: body.email } })
     if (!user) throw new BadRequest("User with such email was not found")
 
@@ -34,15 +35,36 @@ export async function login(app: FastifyInstance, body: schemas.LoginBody) {
         data: { token: tokens.refresh, userId: user.id, creationDate: new Date() }
     })
 
-    return tokens
+    return {
+        cookies: [
+            {
+                name: "accessToken",
+                value: tokens.access,
+                options: { path: "/", maxAge: TokenTtl.Access }
+            },
+            {
+                name: "refreshToken",
+                value: tokens.refresh,
+                options: { path: "/", maxAge: TokenTtl.Refresh, httpOnly: true }
+            }
+        ]
+    }
 }
 
-export async function getMe(app: FastifyInstance, payload: Payload) {
+export const getMe: RouteHandler<{ payload: UserPayload }> = async (app, { payload }) => {
     const user = await app.getUser(payload.id)
-    return dtos.user(user)
+    return { payload: dtos.user(user) }
 }
 
-export async function logout(app: FastifyInstance, cookies: Types.LogoutCookies) {
+export const logout: RouteHandler<{ cookies: schemas.LogoutCookies }> = async (
+    app,
+    { cookies }
+) => {
+    const localCookies: Array<ReplyCookie> = [
+        { name: "accessToken", value: undefined },
+        { name: "refreshToken", value: undefined }
+    ]
+
     if (!cookies.refreshToken) throw new Unauthorized("Refresh token is not defined")
 
     const refreshToken = await app.prisma.refreshToken.findFirst({
@@ -51,13 +73,22 @@ export async function logout(app: FastifyInstance, cookies: Types.LogoutCookies)
 
     if (!refreshToken) {
         utils.getPayload(app, cookies.refreshToken)
-        throw new InternalServerError("Unexpected error")
+
+        return {
+            cookies: localCookies,
+            payload: new InternalServerError("Unexpected error")
+        }
     }
 
     await app.prisma.refreshToken.delete({ where: { id: refreshToken.id } })
+
+    return { cookies: localCookies }
 }
 
-export async function refresh(app: FastifyInstance, cookies: Types.RefreshCookies) {
+export const refresh: RouteHandler<{ cookies: schemas.RefreshCookies }> = async (
+    app,
+    { cookies }
+) => {
     if (!cookies.refreshToken) throw new Unauthorized("Refresh token is not defined")
 
     const payload = utils.getPayload(app, cookies.refreshToken)
@@ -73,5 +104,25 @@ export async function refresh(app: FastifyInstance, cookies: Types.RefreshCookie
         data: { token: tokens.refresh, creationDate: new Date() }
     })
 
-    return tokens
+    return {
+        cookies: [
+            {
+                name: "accessToken",
+                value: tokens.access,
+                options: {
+                    path: "/",
+                    maxAge: TokenTtl.Access
+                }
+            },
+            {
+                name: "refreshToken",
+                value: tokens.refresh,
+                options: {
+                    path: "/",
+                    maxAge: TokenTtl.Refresh,
+                    httpOnly: true
+                }
+            }
+        ]
+    }
 }

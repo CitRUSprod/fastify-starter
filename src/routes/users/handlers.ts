@@ -1,11 +1,10 @@
-import { FastifyInstance } from "fastify"
 import { MethodNotAllowed } from "http-errors"
 import { Prisma, Role } from "@prisma/client"
 import { dtos, getItemsPage, hasAccess } from "$/utils"
-import { Payload } from "$/types"
+import { UserPayload, RouteHandler } from "$/types"
 import * as schemas from "./schemas"
 
-export async function getUsers(app: FastifyInstance, query: schemas.GetUsersQuery) {
+export const getUsers: RouteHandler<{ query: schemas.GetUsersQuery }> = async (app, { query }) => {
     const page = await getItemsPage(
         { page: query.page, perPage: query.perPage },
         async (skip, take) => {
@@ -26,20 +25,19 @@ export async function getUsers(app: FastifyInstance, query: schemas.GetUsersQuer
         }
     )
 
-    return page
+    return { payload: page }
 }
 
-export async function getUser(app: FastifyInstance, params: schemas.GetUserParams) {
+export const getUser: RouteHandler<{ params: schemas.GetUserParams }> = async (app, { params }) => {
     const user = await app.getUser(params.id)
-    return dtos.user(user)
+    return { payload: dtos.user(user) }
 }
 
-export async function updateUser(
-    app: FastifyInstance,
-    payload: Payload,
-    params: schemas.UpdateUserParams,
+export const updateUser: RouteHandler<{
+    payload: UserPayload
+    params: schemas.UpdateUserParams
     body: schemas.UpdateUserBody
-) {
+}> = async (app, { payload, params, body }) => {
     const user = await app.getUser(params.id)
     const userRequester = await app.getUser(payload.id)
 
@@ -49,7 +47,7 @@ export async function updateUser(
             data: { email: body.email, username: body.username }
         })
 
-        return dtos.user(updatedUser)
+        return { payload: dtos.user(updatedUser) }
     } else {
         throw new MethodNotAllowed("No access")
     }
