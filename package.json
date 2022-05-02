@@ -16,6 +16,7 @@
         "prisma:migrations:create": "pnpm prisma:migrations -- dev",
         "prisma:migrations:run": "pnpm prisma:migrations -- deploy",
         "prisma:migrations:reset": "pnpm prisma:migrations -- reset",
+        "prisma:seeds:run": "pnpm prisma -- db seed",
         "eslint": "eslint --color",
         "eslint:fix": "pnpm eslint -- --fix",
         "eslint:all": "pnpm eslint -- \"**/*.{md,json,y?(a)ml,js,ts}\"",
@@ -51,7 +52,8 @@
         ]
     },
     "prisma": {
-        "schema": "src/prisma/schema.prisma"
+        "schema": "src/prisma/schema.prisma",
+        "seed": "ts-node -T src/prisma/seeds.ts"
     },
     "devDependencies": {
         "@citrus-linting/eslint-config": "0.18.2",
@@ -82,6 +84,7 @@
         "prettier": "2.6.2",
         "prisma": "3.12.0",
         "source-map-support": "0.5.21",
+        "ts-node": "10.7.0",
         "type-fest": "2.12.2",
         "typescript": "4.6.3"
     },
