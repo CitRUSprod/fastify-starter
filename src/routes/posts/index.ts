@@ -2,7 +2,7 @@ import { FastifyPluginCallback } from "fastify"
 import * as schemas from "./schemas"
 import * as handlers from "./handlers"
 
-export const postsRoute: FastifyPluginCallback = (app, options, done) => {
+export const postsRoutes: FastifyPluginCallback = (app, options, done) => {
     // eslint-disable-next-line @typescript-eslint/naming-convention
     app.get<{ Querystring: schemas.GetPostsQuery }>("/", {
         schema: {

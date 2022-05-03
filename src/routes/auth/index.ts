@@ -4,7 +4,7 @@ import { parseByAjvSchema } from "$/utils"
 import * as schemas from "./schemas"
 import * as handlers from "./handlers"
 
-export const authRoute: FastifyPluginCallback = (app, options, done) => {
+export const authRoutes: FastifyPluginCallback = (app, options, done) => {
     // eslint-disable-next-line @typescript-eslint/naming-convention
     app.post<{ Body: schemas.RegisterBody }>("/register", {
         schema: {
@@ -75,6 +75,73 @@ export const authRoute: FastifyPluginCallback = (app, options, done) => {
             await reply.sendData(data)
         }
     })
+
+    app.post("/email/confirm", {
+        schema: {
+            tags: ["auth"]
+        },
+        preHandler: app.auth([app.isAuthorized]),
+        async handler(req, reply) {
+            const data = await handlers.sendConfirmationEmail(app, { payload: req.user })
+            await reply.sendData(data)
+        }
+    })
+
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    app.post<{ Params: schemas.ConfirmEmailParams }>("/email/confirm/:emailConfirmationToken", {
+        schema: {
+            tags: ["auth"],
+            params: schemas.confirmEmailParams
+        },
+        async handler(req, reply) {
+            const data = await handlers.confirmEmail(app, { params: req.params })
+            await reply.sendData(data)
+        }
+    })
+
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    app.post<{ Body: schemas.ChangePasswordBody }>("/password/change", {
+        schema: {
+            tags: ["auth"],
+            body: schemas.changePasswordBody
+        },
+        preHandler: app.auth([app.isAuthorized]),
+        async handler(req, reply) {
+            const data = await handlers.changePassword(app, { payload: req.user, body: req.body })
+            await reply.sendData(data)
+        }
+    })
+
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    app.post<{ Body: schemas.SendPasswordResetEmailBody }>("/password/reset", {
+        schema: {
+            tags: ["auth"],
+            body: schemas.sendPasswordResetEmailBody
+        },
+        async handler(req, reply) {
+            const data = await handlers.sendPasswordResetEmail(app, { body: req.body })
+            await reply.sendData(data)
+        }
+    })
+
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    app.post<{ Params: schemas.ResetPasswordParams; Body: schemas.ResetPasswordBody }>(
+        "/password/reset/:passwordResetToken",
+        {
+            schema: {
+                tags: ["auth"],
+                params: schemas.resetPasswordParams,
+                body: schemas.resetPasswordBody
+            },
+            async handler(req, reply) {
+                const data = await handlers.resetPassword(app, {
+                    params: req.params,
+                    body: req.body
+                })
+                await reply.sendData(data)
+            }
+        }
+    )
 
     done()
 }

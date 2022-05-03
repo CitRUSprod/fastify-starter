@@ -41,7 +41,11 @@ export const updateUser: RouteHandler<{
     if (userRequester.id === user.id || hasAccess(user, Role.Admin)) {
         const updatedUser = await app.prisma.user.update({
             where: { id: params.id },
-            data: { email: body.email, username: body.username }
+            data: {
+                email: body.email,
+                username: body.username,
+                confirmedEmail: body.email === undefined ? undefined : false
+            }
         })
 
         return { payload: dtos.user(updatedUser) }

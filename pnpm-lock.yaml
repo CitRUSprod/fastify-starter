@@ -11,7 +11,9 @@ specifiers:
   '@types/eslint': 8.4.1
   '@types/http-errors': 1.8.2
   '@types/node': 17.0.23
+  '@types/nodemailer': 6.4.4
   '@types/prettier': 2.6.0
+  '@types/uuid': 8.3.4
   '@typescript-eslint/eslint-plugin': 5.19.0
   '@typescript-eslint/parser': 5.19.0
   ajv: 8.11.0
@@ -40,6 +42,7 @@ specifiers:
   http-errors: 2.0.0
   husky: 7.0.4
   lint-staged: 12.3.7
+  nodemailer: 6.7.4
   prettier: 2.6.2
   prisma: 3.12.0
   source-map-support: 0.5.21
@@ -47,6 +50,7 @@ specifiers:
   tslib: 2.3.1
   type-fest: 2.12.2
   typescript: 4.6.3
+  uuid: 8.3.2
 
 dependencies:
   '@prisma/client': 3.12.0_prisma@3.12.0
@@ -63,7 +67,9 @@ dependencies:
   fastify-plugin: 3.0.1
   fastify-swagger: 5.1.1
   http-errors: 2.0.0
+  nodemailer: 6.7.4
   tslib: 2.3.1
+  uuid: 8.3.2
 
 devDependencies:
   '@citrus-linting/eslint-config': 0.18.2
@@ -73,7 +79,9 @@ devDependencies:
   '@types/eslint': 8.4.1
   '@types/http-errors': 1.8.2
   '@types/node': 17.0.23
+  '@types/nodemailer': 6.4.4
   '@types/prettier': 2.6.0
+  '@types/uuid': 8.3.4
   '@typescript-eslint/eslint-plugin': 5.19.0_f34adc8488d2e4f014fe61432d70cbf2
   '@typescript-eslint/parser': 5.19.0_eslint@8.13.0+typescript@4.6.3
   any-eslint-parser: 1.0.1_eslint@8.13.0
@@ -595,6 +603,12 @@ packages:
     resolution: {integrity: sha512-UxDxWn7dl97rKVeVS61vErvw086aCYhDLyvRQZ5Rk65rZKepaFdm53GeqXaKBuOhED4e9uWq34IC3TdSdJJ2Gw==}
     dev: true
 
+  /@types/nodemailer/6.4.4:
+    resolution: {integrity: sha512-Ksw4t7iliXeYGvIQcSIgWQ5BLuC/mljIEbjf615svhZL10PE9t+ei8O9gDaD3FPCasUJn9KTLwz2JFJyiiyuqw==}
+    dependencies:
+      '@types/node': 17.0.23
+    dev: true
+
   /@types/normalize-package-data/2.4.1:
     resolution: {integrity: sha512-Gj7cI7z+98M282Tqmp2K5EIsoouUEzbBJhQQzDE3jSIRk6r9gsz0oUokqIUR4u1R3dMHo0pDHM7sNOHyhulypw==}
     dev: true
@@ -605,6 +619,10 @@ packages:
 
   /@types/prettier/2.6.0:
     resolution: {integrity: sha512-G/AdOadiZhnJp0jXCaBQU449W2h716OW/EoXeYkCytxKL06X1WCXB4DZpp8TpZ8eyIJVS1cw4lrlkkSYU21cDw==}
+    dev: true
+
+  /@types/uuid/8.3.4:
+    resolution: {integrity: sha512-c/I8ZRb51j+pYGAu5CrFMRxqZ2ke4y2grEBO5AUjgSkSk+qT2Ea+OdWElz/OiMf5MNpn2b17kuVBwZLQJXzihw==}
     dev: true
 
   /@typescript-eslint/eslint-plugin/5.19.0_f34adc8488d2e4f014fe61432d70cbf2:
@@ -2933,6 +2951,11 @@ packages:
       whatwg-url: 5.0.0
     dev: false
 
+  /nodemailer/6.7.4:
+    resolution: {integrity: sha512-TBSS3qS8WG45ycUwEvEA/3UM1o3sLz9jUl4TPUKPz4ImWWM6UgRCb5pLO+HOouDKEj57yNLOrzQlO8+9IjWZoA==}
+    engines: {node: '>=6.0.0'}
+    dev: false
+
   /nopt/5.0.0:
     resolution: {integrity: sha512-Tbj67rffqceeLpcRXrT7vKAN8CwfPeIBgM7E6iBkmKLV7bEMwpGgYLGv0jACUsECaa/vuxP0IjEont6umdMgtQ==}
     engines: {node: '>=6'}
@@ -3887,6 +3910,11 @@ packages:
 
   /util-deprecate/1.0.2:
     resolution: {integrity: sha1-RQ1Nyfpw3nMnYvvS1KKJgUGaDM8=}
+
+  /uuid/8.3.2:
+    resolution: {integrity: sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==}
+    hasBin: true
+    dev: false
 
   /v8-compile-cache-lib/3.0.0:
     resolution: {integrity: sha512-mpSYqfsFvASnSn5qMiwrr4VKfumbPyONLCOPmsR3A6pTY/r0+tSaVbgPWSAIuzbk3lCTa+FForeTiO+wBQGkjA==}

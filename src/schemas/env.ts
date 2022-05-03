@@ -1,12 +1,19 @@
+/* eslint-disable @typescript-eslint/naming-convention */
+
 import { Type } from "@sinclair/typebox"
 
 export const env = Type.Strict(
     Type.Object(
         {
-            // eslint-disable-next-line @typescript-eslint/naming-convention
             JWT_SECRET: Type.String(),
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            ENABLE_DOCS: Type.Boolean()
+            ENABLE_DOCS: Type.Boolean(),
+            MAILER_HOST: Type.String(),
+            MAILER_PORT: Type.Integer(),
+            MAILER_USERNAME: Type.String(),
+            MAILER_PASSWORD: Type.String(),
+            MAILER_NAME: Type.String(),
+            EMAIL_CONFIRMATION_URL: Type.String(),
+            PASSWORD_RESET_URL: Type.String()
         },
         { additionalProperties: false }
     )

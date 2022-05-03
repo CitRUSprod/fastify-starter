@@ -1,7 +1,8 @@
 import { BadRequest, InternalServerError } from "http-errors"
 import argon2 from "argon2"
+import { v4 as createUuid } from "uuid"
 import { TokenTtl } from "$/enums"
-import { dtos } from "$/utils"
+import { env, dtos, sendEmail } from "$/utils"
 import { UserPayload, ReplyCookie, RouteHandler } from "$/types"
 import * as schemas from "./schemas"
 import * as utils from "./utils"
@@ -89,6 +90,8 @@ export const refresh: RouteHandler<{ cookies: schemas.RefreshCookies }> = async 
 ) => {
     const payload = utils.getPayload(app, cookies.refreshToken)
 
+    await utils.deleteExpiredRefreshTokens(app)
+
     const refreshToken = await app.prisma.refreshToken.findFirst({
         where: { token: cookies.refreshToken }
     })
@@ -121,4 +124,144 @@ export const refresh: RouteHandler<{ cookies: schemas.RefreshCookies }> = async 
             }
         ]
     }
+}
+
+export const sendConfirmationEmail: RouteHandler<{ payload: UserPayload }> = async (
+    app,
+    { payload }
+) => {
+    const user = await app.getUser(payload.id)
+    if (user.confirmedEmail) throw new BadRequest("Email is already confirmed")
+
+    const token = createUuid()
+
+    const emailConfirmationToken = await app.prisma.emailConfirmationToken.findFirst({
+        where: { userId: user.id }
+    })
+
+    if (emailConfirmationToken) {
+        await app.prisma.emailConfirmationToken.update({
+            where: { id: emailConfirmationToken.id },
+            data: { token, creationDate: new Date() }
+        })
+    } else {
+        await app.prisma.emailConfirmationToken.create({
+            data: { token, userId: user.id, creationDate: new Date() }
+        })
+    }
+
+    const url = env.EMAIL_CONFIRMATION_URL.replace(/{{token}}/g, token)
+    const subject = "Email confirmation"
+    const message = `
+        <div>
+            <h3>Dear ${user.username}</h3>
+        </div>
+        <div>
+            <a href="${url}">Confirm Email</a>
+        </div>
+    `
+    await sendEmail(user.email, subject, message)
+
+    return {}
+}
+
+export const confirmEmail: RouteHandler<{ params: schemas.ConfirmEmailParams }> = async (
+    app,
+    { params }
+) => {
+    await utils.deleteExpiredEmailConfirmationTokens(app)
+
+    const emailConfirmationToken = await app.prisma.emailConfirmationToken.findFirst({
+        where: { token: params.emailConfirmationToken }
+    })
+    if (!emailConfirmationToken) throw new BadRequest("Email confirmation token expired")
+
+    await app.prisma.user.update({
+        where: { id: emailConfirmationToken.userId },
+        data: { confirmedEmail: true }
+    })
+
+    await app.prisma.emailConfirmationToken.delete({ where: { id: emailConfirmationToken.id } })
+
+    return {}
+}
+
+export const changePassword: RouteHandler<{
+    payload: UserPayload
+    body: schemas.ChangePasswordBody
+}> = async (app, { payload, body }) => {
+    const user = await app.getUser(payload.id)
+
+    if (body.oldPassword === body.newPassword) throw new BadRequest("Old and new passwords match")
+
+    const isCorrectPassword = await argon2.verify(user.password, body.oldPassword)
+    if (!isCorrectPassword) throw new BadRequest("Incorrect old password")
+
+    const newPassword = await argon2.hash(body.newPassword)
+    await app.prisma.user.update({
+        where: { id: user.id },
+        data: { password: newPassword }
+    })
+
+    return {}
+}
+
+export const sendPasswordResetEmail: RouteHandler<{
+    body: schemas.SendPasswordResetEmailBody
+}> = async (app, { body }) => {
+    const user = await app.prisma.user.findFirst({ where: { email: body.email } })
+    if (!user) throw new BadRequest("User with such email was not found")
+
+    const token = createUuid()
+
+    const passwordResetToken = await app.prisma.passwordResetToken.findFirst({
+        where: { userId: user.id }
+    })
+
+    if (passwordResetToken) {
+        await app.prisma.passwordResetToken.update({
+            where: { id: passwordResetToken.id },
+            data: { token, creationDate: new Date() }
+        })
+    } else {
+        await app.prisma.passwordResetToken.create({
+            data: { token, userId: user.id, creationDate: new Date() }
+        })
+    }
+
+    const url = env.PASSWORD_RESET_URL.replace(/{{token}}/g, token)
+    const subject = "Password reset"
+    const message = `
+        <div>
+            <h3>Dear ${user.username}</h3>
+        </div>
+        <div>
+            <a href="${url}">Reset password</a>
+        </div>
+    `
+    await sendEmail(user.email, subject, message)
+
+    return {}
+}
+
+export const resetPassword: RouteHandler<{
+    params: schemas.ResetPasswordParams
+    body: schemas.ResetPasswordBody
+}> = async (app, { params, body }) => {
+    await utils.deleteExpiredPasswordResetTokens(app)
+
+    const passwordResetToken = await app.prisma.passwordResetToken.findFirst({
+        where: { token: params.passwordResetToken }
+    })
+    if (!passwordResetToken) throw new BadRequest("Password reset token expired")
+
+    const newPassword = await argon2.hash(body.newPassword)
+    await app.prisma.user.update({
+        where: { id: passwordResetToken.userId },
+        data: { password: newPassword }
+    })
+
+    await app.prisma.passwordResetToken.delete({ where: { id: passwordResetToken.id } })
+
+    return {}
 }

@@ -3,7 +3,7 @@ import { Role } from "@prisma/client"
 import * as schemas from "./schemas"
 import * as handlers from "./handlers"
 
-export const usersRoute: FastifyPluginCallback = (app, options, done) => {
+export const usersRoutes: FastifyPluginCallback = (app, options, done) => {
     // eslint-disable-next-line @typescript-eslint/naming-convention
     app.get<{ Querystring: schemas.GetUsersQuery }>("/", {
         schema: {

@@ -1,12 +1,12 @@
 import { FastifyPluginCallback } from "fastify"
-import { authRoute } from "./auth"
-import { usersRoute } from "./users"
-import { postsRoute } from "./posts"
+import { authRoutes } from "./auth"
+import { usersRoutes } from "./users"
+import { postsRoutes } from "./posts"
 
 export const routes: FastifyPluginCallback = (app, options, done) => {
-    app.register(authRoute, { prefix: "/auth" })
-    app.register(usersRoute, { prefix: "/users" })
-    app.register(postsRoute, { prefix: "/posts" })
+    app.register(authRoutes, { prefix: "/auth" })
+    app.register(usersRoutes, { prefix: "/users" })
+    app.register(postsRoutes, { prefix: "/posts" })
 
     done()
 }

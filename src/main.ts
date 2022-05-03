@@ -5,10 +5,7 @@ import cookie from "fastify-cookie"
 import auth from "fastify-auth"
 import { decorators } from "$/decorators"
 import { routes } from "$/routes"
-import * as schemas from "$/schemas"
-import { ajv, normalizeAjvErrors, parseByAjvSchema } from "$/utils"
-
-const env = parseByAjvSchema(schemas.env, process.env, "env")
+import { env, ajv, normalizeAjvErrors } from "$/utils"
 
 const port = 6500
 

@@ -18,14 +18,32 @@ model User {
     username String @unique
     password String
     role Role @default(User)
-    verified Boolean @default(false)
+    confirmedEmail Boolean @default(false)
     banned Boolean @default(false)
     registrationDate DateTime
     refreshTokens RefreshToken[]
+    emailConfirmationToken EmailConfirmationToken?
+    passwordResetToken PasswordResetToken?
     posts Post[]
 }
 
 model RefreshToken {
+    id Int @id @default(autoincrement())
+    token String @unique
+    userId Int
+    user User @relation(fields: [userId], references: [id])
+    creationDate DateTime
+}
+
+model EmailConfirmationToken {
+    id Int @id @default(autoincrement())
+    token String @unique
+    userId Int
+    user User @relation(fields: [userId], references: [id])
+    creationDate DateTime
+}
+
+model PasswordResetToken {
     id Int @id @default(autoincrement())
     token String @unique
     userId Int
