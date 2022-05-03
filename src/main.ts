@@ -3,8 +3,10 @@ import swagger from "fastify-swagger"
 import jwt from "fastify-jwt"
 import cookie from "fastify-cookie"
 import auth from "fastify-auth"
+import socketIo from "fastify-socket.io"
 import { decorators } from "$/decorators"
 import { routes } from "$/routes"
+import { initSockets } from "$/sockets"
 import { env, ajv, normalizeAjvErrors } from "$/utils"
 
 const port = 6500
@@ -31,11 +33,13 @@ if (env.ENABLE_DOCS) {
 app.register(jwt, { secret: env.JWT_SECRET, cookie: { cookieName: "accessToken", signed: false } })
     .register(cookie)
     .register(auth)
+    .register(socketIo)
 
 app.register(decorators)
 app.register(routes)
 
 app.listen(port, "0.0.0.0", err => {
     if (err) throw err
+    initSockets(app)
     console.log(`Running on http://localhost:${port}`)
 })
