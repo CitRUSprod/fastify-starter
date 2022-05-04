@@ -32,6 +32,17 @@ Links:
 
 ### Tools
 
+Database operations with `prisma`:
+
+```sh
+pnpm prisma:generate
+pnpm prisma:studio
+pnpm prisma:migrations:create
+pnpm prisma:migrations:run
+pnpm prisma:migrations:reset
+pnpm prisma:seeds:run
+```
+
 Commit with `commitizen`:
 
 ```sh
