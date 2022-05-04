@@ -1,4 +1,4 @@
-import { CookieSerializeOptions } from "fastify-cookie"
+import { CookieSerializeOptions } from "@fastify/cookie"
 import { JsonObject } from "type-fest"
 
 export interface ReplyCookie {

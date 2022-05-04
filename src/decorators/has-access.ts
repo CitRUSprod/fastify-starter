@@ -1,5 +1,5 @@
 import { FastifyInstance, FastifyPluginCallback } from "fastify"
-import { FastifyAuthFunction } from "fastify-auth"
+import { FastifyAuthFunction } from "@fastify/auth"
 import { MethodNotAllowed } from "http-errors"
 import { Role } from "@prisma/client"
 import { hasAccess as utilHasAccess } from "$/utils"
