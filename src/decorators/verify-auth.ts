@@ -4,7 +4,7 @@ import { UserPayload } from "$/types"
 
 declare module "fastify" {
     interface FastifyInstance {
-        isAuthorized: FastifyAuthFunction
+        verifyAuth: FastifyAuthFunction
     }
 }
 
@@ -14,7 +14,8 @@ declare module "@fastify/jwt" {
     }
 }
 
-export const isAuthorized: FastifyPluginCallback = (app, options, done) => {
-    app.decorate<FastifyInstance["isAuthorized"]>("isAuthorized", req => req.jwtVerify())
+export const verifyAuth: FastifyPluginCallback = (app, options, done) => {
+    app.decorate<FastifyInstance["verifyAuth"]>("verifyAuth", req => req.jwtVerify())
+
     done()
 }

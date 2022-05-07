@@ -33,7 +33,7 @@ export const authRoutes: FastifyPluginCallback = (app, options, done) => {
         schema: {
             tags: ["auth"]
         },
-        preHandler: app.auth([app.isAuthorized]),
+        preHandler: app.auth([app.verifyAuth]),
         async handler(req, reply) {
             const data = await handlers.getMe(app, { payload: req.user })
             await reply.sendData(data)
@@ -80,7 +80,7 @@ export const authRoutes: FastifyPluginCallback = (app, options, done) => {
         schema: {
             tags: ["auth"]
         },
-        preHandler: app.auth([app.isAuthorized]),
+        preHandler: app.auth([app.verifyAuth]),
         async handler(req, reply) {
             const data = await handlers.sendConfirmationEmail(app, { payload: req.user })
             await reply.sendData(data)
@@ -105,7 +105,7 @@ export const authRoutes: FastifyPluginCallback = (app, options, done) => {
             tags: ["auth"],
             body: schemas.changePasswordBody
         },
-        preHandler: app.auth([app.isAuthorized]),
+        preHandler: app.auth([app.verifyAuth]),
         async handler(req, reply) {
             const data = await handlers.changePassword(app, { payload: req.user, body: req.body })
             await reply.sendData(data)

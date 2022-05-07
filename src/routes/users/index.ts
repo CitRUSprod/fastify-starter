@@ -1,5 +1,4 @@
 import { FastifyPluginCallback } from "fastify"
-import { Role } from "@prisma/client"
 import * as schemas from "./schemas"
 import * as handlers from "./handlers"
 
@@ -10,7 +9,7 @@ export const usersRoutes: FastifyPluginCallback = (app, options, done) => {
             tags: ["users"],
             querystring: schemas.getUsersQuery
         },
-        preHandler: app.auth([app.isAuthorized, app.hasAccess(Role.Admin)], { relation: "and" }),
+        preHandler: app.auth([app.verifyAuth]),
         async handler(req, reply) {
             const data = await handlers.getUsers(app, { query: req.query })
             await reply.sendData(data)
@@ -36,7 +35,7 @@ export const usersRoutes: FastifyPluginCallback = (app, options, done) => {
             params: schemas.updateUserParams,
             body: schemas.updateUserBody
         },
-        preHandler: app.auth([app.isAuthorized]),
+        preHandler: app.auth([app.verifyAuth]),
         async handler(req, reply) {
             const data = await handlers.updateUser(app, {
                 payload: req.user,

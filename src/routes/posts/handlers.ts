@@ -1,6 +1,6 @@
 import { MethodNotAllowed } from "http-errors"
-import { Prisma, Role } from "@prisma/client"
-import { dtos, getItemsPage, hasAccess } from "$/utils"
+import { Prisma } from "@prisma/client"
+import { dtos, getItemsPage } from "$/utils"
 import { UserPayload, RouteHandler } from "$/types"
 import * as schemas from "./schemas"
 import * as utils from "./utils"
@@ -58,7 +58,7 @@ export const updatePost: RouteHandler<{
     const post = await utils.getPost(app, params.id)
     const user = await app.getUser(payload.id)
 
-    if (post.authorId === user.id || hasAccess(user, Role.Admin)) {
+    if (post.authorId === user.id) {
         const updatedPost = await app.prisma.post.update({
             where: { id: params.id },
             data: { title: body.title, content: body.content, editingDate: new Date() },
@@ -78,7 +78,7 @@ export const deletePost: RouteHandler<{
     const post = await utils.getPost(app, params.id)
     const user = await app.getUser(payload.id)
 
-    if (post.authorId === user.id || hasAccess(user, Role.Admin)) {
+    if (post.authorId === user.id) {
         const deletedPost = await app.prisma.post.delete({
             where: { id: params.id },
             include: { author: true }

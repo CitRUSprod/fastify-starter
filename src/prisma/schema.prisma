@@ -7,9 +7,16 @@ generator client {
     provider = "prisma-client-js"
 }
 
-enum Role {
-    User
-    Admin
+enum Permission {
+    DeleteOtherUserPost
+    BanUser
+}
+
+model Role {
+    id Int @id @default(autoincrement())
+    name String @unique
+    permissions Permission[]
+    users User[]
 }
 
 model User {
@@ -17,7 +24,8 @@ model User {
     email String @unique
     username String @unique
     password String
-    role Role @default(User)
+    roleId Int @default(1)
+    role Role @relation(fields: [roleId], references: [id])
     confirmedEmail Boolean @default(false)
     banned Boolean @default(false)
     registrationDate DateTime

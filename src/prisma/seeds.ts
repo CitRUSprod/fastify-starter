@@ -1,16 +1,18 @@
-import { PrismaClient, Role } from "@prisma/client"
+import { PrismaClient } from "@prisma/client"
 import argon2 from "argon2"
 
 const client = new PrismaClient()
 
 client.$connect().then(async () => {
+    await client.role.createMany({ data: [{ name: "user" }, { name: "admin" }] })
+
     const password = await argon2.hash("12345678")
     await client.user.create({
         data: {
             email: "admin@example.com",
             username: "Admin",
             password,
-            role: Role.Admin,
+            roleId: 2,
             registrationDate: new Date()
         }
     })
