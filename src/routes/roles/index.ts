@@ -1,0 +1,57 @@
+import { FastifyPluginCallback } from "fastify"
+import * as schemas from "./schemas"
+import * as handlers from "./handlers"
+
+export const rolesRoutes: FastifyPluginCallback = (app, options, done) => {
+    app.get("/", {
+        schema: {
+            tags: ["roles"]
+        },
+        async handler(req, reply) {
+            const data = await handlers.getRoles(app, {})
+            await reply.sendData(data)
+        }
+    })
+
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    app.post<{ Body: schemas.CreateRoleBody }>("/", {
+        schema: {
+            tags: ["roles"],
+            body: schemas.createRoleBody
+        },
+        preHandler: app.auth([app.verifyAuth]),
+        async handler(req, reply) {
+            const data = await handlers.createRole(app, { body: req.body })
+            await reply.sendData(data)
+        }
+    })
+
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    app.patch<{ Params: schemas.UpdateRoleParams; Body: schemas.UpdateRoleBody }>("/:id", {
+        schema: {
+            tags: ["roles"],
+            params: schemas.updateRoleParams,
+            body: schemas.updateRoleBody
+        },
+        preHandler: app.auth([app.verifyAuth]),
+        async handler(req, reply) {
+            const data = await handlers.updateRole(app, { params: req.params, body: req.body })
+            await reply.sendData(data)
+        }
+    })
+
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    app.delete<{ Params: schemas.DeleteRoleParams }>("/:id", {
+        schema: {
+            tags: ["roles"],
+            params: schemas.deleteRoleParams
+        },
+        preHandler: app.auth([app.verifyAuth]),
+        async handler(req, reply) {
+            const data = await handlers.deleteRole(app, { params: req.params })
+            await reply.sendData(data)
+        }
+    })
+
+    done()
+}
