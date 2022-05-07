@@ -6,8 +6,8 @@ export const getUsersQuery = Type.Strict(
         {
             ...schemas.pagination().properties,
             ...schemas.sorting("email", "username", "registrationDate").properties,
-            email: Type.Optional(schemas.user.email()),
-            username: Type.Optional(schemas.user.username())
+            email: Type.Optional(schemas.models.user.email()),
+            username: Type.Optional(schemas.models.user.username())
         },
         { additionalProperties: false }
     )
@@ -40,10 +40,10 @@ export type UpdateUserParams = Static<typeof updateUserParams>
 export const updateUserBody = Type.Strict(
     Type.Object(
         {
-            email: Type.Optional(schemas.user.email()),
-            username: Type.Optional(schemas.user.username())
+            email: Type.Optional(schemas.models.user.email()),
+            username: Type.Optional(schemas.models.user.username())
         },
-        { additionalProperties: false }
+        { additionalProperties: false, minProperties: 1 }
     )
 )
 

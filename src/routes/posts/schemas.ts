@@ -6,7 +6,7 @@ export const getPostsQuery = Type.Strict(
         {
             ...schemas.pagination().properties,
             ...schemas.sorting("title", "creationDate").properties,
-            title: Type.Optional(schemas.post.title())
+            title: Type.Optional(schemas.models.post.title())
         },
         { additionalProperties: false }
     )
@@ -17,8 +17,8 @@ export type GetPostsQuery = Static<typeof getPostsQuery>
 export const createPostBody = Type.Strict(
     Type.Object(
         {
-            title: schemas.post.title(),
-            content: schemas.post.content()
+            title: schemas.models.post.title(),
+            content: schemas.models.post.content()
         },
         { additionalProperties: false }
     )
@@ -51,10 +51,10 @@ export type UpdatePostParams = Static<typeof updatePostParams>
 export const updatePostBody = Type.Strict(
     Type.Object(
         {
-            title: Type.Optional(schemas.post.title()),
-            content: Type.Optional(schemas.post.content())
+            title: Type.Optional(schemas.models.post.title()),
+            content: Type.Optional(schemas.models.post.content())
         },
-        { additionalProperties: false }
+        { additionalProperties: false, minProperties: 1 }
     )
 )
 

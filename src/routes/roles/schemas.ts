@@ -1,20 +1,11 @@
-import { Permission } from "@prisma/client"
 import { Type, Static } from "@sinclair/typebox"
 import * as schemas from "$/schemas"
-
-function name() {
-    return Type.String()
-}
-
-function permissions() {
-    return Type.Array(Type.Enum(Permission))
-}
 
 export const createRoleBody = Type.Strict(
     Type.Object(
         {
-            name: name(),
-            permissions: permissions()
+            name: schemas.models.role.name(),
+            permissions: schemas.models.role.permissions()
         },
         { additionalProperties: false }
     )
@@ -36,10 +27,10 @@ export type UpdateRoleParams = Static<typeof updateRoleParams>
 export const updateRoleBody = Type.Strict(
     Type.Object(
         {
-            name: Type.Optional(name()),
-            permissions: Type.Optional(permissions())
+            name: Type.Optional(schemas.models.role.name()),
+            permissions: Type.Optional(schemas.models.role.permissions())
         },
-        { additionalProperties: false }
+        { additionalProperties: false, minProperties: 1 }
     )
 )
 
