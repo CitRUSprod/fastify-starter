@@ -35,7 +35,7 @@ export const authRoutes: FastifyPluginCallback = (app, options, done) => {
         },
         preHandler: app.auth([app.verifyAuth]),
         async handler(req, reply) {
-            const data = await handlers.getMe(app, { payload: req.user })
+            const data = await handlers.getMe(app, { userData: req.userData })
             await reply.sendData(data)
         }
     })
@@ -82,7 +82,7 @@ export const authRoutes: FastifyPluginCallback = (app, options, done) => {
         },
         preHandler: app.auth([app.verifyAuth]),
         async handler(req, reply) {
-            const data = await handlers.sendConfirmationEmail(app, { payload: req.user })
+            const data = await handlers.sendConfirmationEmail(app, { userData: req.userData })
             await reply.sendData(data)
         }
     })
@@ -107,7 +107,10 @@ export const authRoutes: FastifyPluginCallback = (app, options, done) => {
         },
         preHandler: app.auth([app.verifyAuth]),
         async handler(req, reply) {
-            const data = await handlers.changePassword(app, { payload: req.user, body: req.body })
+            const data = await handlers.changePassword(app, {
+                userData: req.userData,
+                body: req.body
+            })
             await reply.sendData(data)
         }
     })

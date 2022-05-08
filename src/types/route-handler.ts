@@ -1,9 +1,9 @@
 import { FastifyInstance } from "fastify"
-import { UserPayload } from "./user-payload"
+import { UserData } from "./user"
 import { ReplyData } from "./reply-data"
 
 export interface RequestData {
-    payload?: UserPayload
+    userData?: UserData
     cookies?: Record<string, string>
     params?: Record<string, string | number>
     query?: Record<string, unknown>

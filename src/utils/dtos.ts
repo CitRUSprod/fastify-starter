@@ -1,5 +1,6 @@
 import { User, Role, Permission, Post } from "@prisma/client"
 import { JsonObject } from "type-fest"
+import { UserData } from "$/types"
 
 export function role(r: Role): JsonObject {
     if (r.name === "admin") {
@@ -15,7 +16,7 @@ export function role(r: Role): JsonObject {
     }
 }
 
-export function user(u: User & { role: Role }): JsonObject {
+export function user(u: UserData): JsonObject {
     return {
         id: u.id,
         email: u.email,

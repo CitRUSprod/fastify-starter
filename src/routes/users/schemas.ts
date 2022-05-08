@@ -25,26 +25,3 @@ export const getUserParams = Type.Strict(
 )
 
 export type GetUserParams = Static<typeof getUserParams>
-
-export const updateUserParams = Type.Strict(
-    Type.Object(
-        {
-            id: schemas.id()
-        },
-        { additionalProperties: false }
-    )
-)
-
-export type UpdateUserParams = Static<typeof updateUserParams>
-
-export const updateUserBody = Type.Strict(
-    Type.Object(
-        {
-            email: Type.Optional(schemas.models.user.email()),
-            username: Type.Optional(schemas.models.user.username())
-        },
-        { additionalProperties: false, minProperties: 1 }
-    )
-)
-
-export type UpdateUserBody = Static<typeof updateUserBody>

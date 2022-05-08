@@ -1,7 +1,6 @@
-import { MethodNotAllowed } from "http-errors"
 import { Prisma } from "@prisma/client"
 import { dtos, getItemsPage } from "$/utils"
-import { UserPayload, RouteHandler } from "$/types"
+import { RouteHandler } from "$/types"
 import * as schemas from "./schemas"
 
 export const getUsers: RouteHandler<{ query: schemas.GetUsersQuery }> = async (app, { query }) => {
@@ -29,29 +28,4 @@ export const getUsers: RouteHandler<{ query: schemas.GetUsersQuery }> = async (a
 export const getUser: RouteHandler<{ params: schemas.GetUserParams }> = async (app, { params }) => {
     const user = await app.getUser(params.id)
     return { payload: dtos.user(user) }
-}
-
-export const updateUser: RouteHandler<{
-    payload: UserPayload
-    params: schemas.UpdateUserParams
-    body: schemas.UpdateUserBody
-}> = async (app, { payload, params, body }) => {
-    const user = await app.getUser(params.id)
-    const userRequester = await app.getUser(payload.id)
-
-    if (userRequester.id === user.id) {
-        const updatedUser = await app.prisma.user.update({
-            where: { id: params.id },
-            data: {
-                email: body.email,
-                username: body.username,
-                confirmedEmail: body.email === undefined ? undefined : false
-            },
-            include: { role: true }
-        })
-
-        return { payload: dtos.user(updatedUser) }
-    } else {
-        throw new MethodNotAllowed("No access")
-    }
 }

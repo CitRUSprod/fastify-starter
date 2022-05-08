@@ -28,23 +28,5 @@ export const usersRoutes: FastifyPluginCallback = (app, options, done) => {
         }
     })
 
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    app.patch<{ Params: schemas.UpdateUserParams; Body: schemas.UpdateUserBody }>("/:id", {
-        schema: {
-            tags: ["users"],
-            params: schemas.updateUserParams,
-            body: schemas.updateUserBody
-        },
-        preHandler: app.auth([app.verifyAuth]),
-        async handler(req, reply) {
-            const data = await handlers.updateUser(app, {
-                payload: req.user,
-                params: req.params,
-                body: req.body
-            })
-            await reply.sendData(data)
-        }
-    })
-
     done()
 }

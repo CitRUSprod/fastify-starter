@@ -1,7 +1,7 @@
-import { MethodNotAllowed } from "http-errors"
+import { Forbidden } from "http-errors"
 import { Prisma } from "@prisma/client"
 import { dtos, getItemsPage } from "$/utils"
-import { UserPayload, RouteHandler } from "$/types"
+import { RouteHandler, UserData } from "$/types"
 import * as schemas from "./schemas"
 import * as utils from "./utils"
 
@@ -27,12 +27,11 @@ export const getPosts: RouteHandler<{ query: schemas.GetPostsQuery }> = async (a
 }
 
 export const createPost: RouteHandler<{
-    payload: UserPayload
+    userData: UserData
     body: schemas.CreatePostBody
-}> = async (app, { payload, body }) => {
-    const user = await app.getUser(payload.id)
+}> = async (app, { userData, body }) => {
     const post = await app.prisma.post.create({
-        data: { ...body, authorId: user.id, creationDate: new Date() },
+        data: { ...body, authorId: userData.id, creationDate: new Date() },
         include: { author: true }
     })
 
@@ -51,14 +50,13 @@ export const getPost: RouteHandler<{ params: schemas.GetPostParams }> = async (a
 }
 
 export const updatePost: RouteHandler<{
-    payload: UserPayload
+    userData: UserData
     params: schemas.UpdatePostParams
     body: schemas.UpdatePostBody
-}> = async (app, { payload, params, body }) => {
+}> = async (app, { userData, params, body }) => {
     const post = await utils.getPost(app, params.id)
-    const user = await app.getUser(payload.id)
 
-    if (post.authorId === user.id) {
+    if (post.authorId === userData.id) {
         const updatedPost = await app.prisma.post.update({
             where: { id: params.id },
             data: { title: body.title, content: body.content, editingDate: new Date() },
@@ -67,18 +65,17 @@ export const updatePost: RouteHandler<{
 
         return { payload: dtos.post(updatedPost) }
     } else {
-        throw new MethodNotAllowed("No access")
+        throw new Forbidden("No access")
     }
 }
 
 export const deletePost: RouteHandler<{
-    payload: UserPayload
+    userData: UserData
     params: schemas.DeletePostParams
-}> = async (app, { payload, params }) => {
+}> = async (app, { userData, params }) => {
     const post = await utils.getPost(app, params.id)
-    const user = await app.getUser(payload.id)
 
-    if (post.authorId === user.id) {
+    if (post.authorId === userData.id) {
         const deletedPost = await app.prisma.post.delete({
             where: { id: params.id },
             include: { author: true }
@@ -86,6 +83,6 @@ export const deletePost: RouteHandler<{
 
         return { payload: dtos.post(deletedPost) }
     } else {
-        throw new MethodNotAllowed("No access")
+        throw new Forbidden("No access")
     }
 }

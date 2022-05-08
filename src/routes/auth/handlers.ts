@@ -3,7 +3,7 @@ import argon2 from "argon2"
 import { v4 as createUuid } from "uuid"
 import { TokenTtl } from "$/enums"
 import { env, dtos, sendEmail } from "$/utils"
-import { UserPayload, ReplyCookie, RouteHandler } from "$/types"
+import { UserData, ReplyCookie, RouteHandler } from "$/types"
 import * as schemas from "./schemas"
 import * as utils from "./utils"
 
@@ -52,10 +52,9 @@ export const login: RouteHandler<{ body: schemas.LoginBody }> = async (app, { bo
     }
 }
 
-export const getMe: RouteHandler<{ payload: UserPayload }> = async (app, { payload }) => {
-    const user = await app.getUser(payload.id)
-    return { payload: dtos.user(user) }
-}
+export const getMe: RouteHandler<{ userData: UserData }> = async (app, { userData }) => ({
+    payload: dtos.user(userData)
+})
 
 export const logout: RouteHandler<{ cookies: schemas.LogoutCookies }> = async (
     app,
@@ -126,17 +125,16 @@ export const refresh: RouteHandler<{ cookies: schemas.RefreshCookies }> = async 
     }
 }
 
-export const sendConfirmationEmail: RouteHandler<{ payload: UserPayload }> = async (
+export const sendConfirmationEmail: RouteHandler<{ userData: UserData }> = async (
     app,
-    { payload }
+    { userData }
 ) => {
-    const user = await app.getUser(payload.id)
-    if (user.confirmedEmail) throw new BadRequest("Email is already confirmed")
+    if (userData.confirmedEmail) throw new BadRequest("Email is already confirmed")
 
     const token = createUuid()
 
     const emailConfirmationToken = await app.prisma.emailConfirmationToken.findFirst({
-        where: { userId: user.id }
+        where: { userId: userData.id }
     })
 
     if (emailConfirmationToken) {
@@ -146,7 +144,7 @@ export const sendConfirmationEmail: RouteHandler<{ payload: UserPayload }> = asy
         })
     } else {
         await app.prisma.emailConfirmationToken.create({
-            data: { token, userId: user.id, creationDate: new Date() }
+            data: { token, userId: userData.id, creationDate: new Date() }
         })
     }
 
@@ -154,13 +152,13 @@ export const sendConfirmationEmail: RouteHandler<{ payload: UserPayload }> = asy
     const subject = "Email confirmation"
     const message = `
         <div>
-            <h3>Dear ${user.username}</h3>
+            <h3>Dear ${userData.username}</h3>
         </div>
         <div>
             <a href="${url}">Confirm Email</a>
         </div>
     `
-    await sendEmail(user.email, subject, message)
+    await sendEmail(userData.email, subject, message)
 
     return {}
 }
@@ -187,19 +185,17 @@ export const confirmEmail: RouteHandler<{ params: schemas.ConfirmEmailParams }> 
 }
 
 export const changePassword: RouteHandler<{
-    payload: UserPayload
+    userData: UserData
     body: schemas.ChangePasswordBody
-}> = async (app, { payload, body }) => {
-    const user = await app.getUser(payload.id)
-
+}> = async (app, { userData, body }) => {
     if (body.oldPassword === body.newPassword) throw new BadRequest("Old and new passwords match")
 
-    const isCorrectPassword = await argon2.verify(user.password, body.oldPassword)
+    const isCorrectPassword = await argon2.verify(userData.password, body.oldPassword)
     if (!isCorrectPassword) throw new BadRequest("Incorrect old password")
 
     const newPassword = await argon2.hash(body.newPassword)
     await app.prisma.user.update({
-        where: { id: user.id },
+        where: { id: userData.id },
         data: { password: newPassword }
     })
 
