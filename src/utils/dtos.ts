@@ -1,14 +1,8 @@
-import { User, Role, Permission, Post } from "@prisma/client"
+import { User, Role, Post } from "@prisma/client"
 import { JsonObject } from "type-fest"
 import { UserData } from "$/types"
 
 export function role(r: Role): JsonObject {
-    if (r.name === "admin") {
-        for (const permission of Object.keys(Permission)) {
-            r.permissions.push(permission as Permission)
-        }
-    }
-
     return {
         id: r.id,
         name: r.name,

@@ -1,3 +1,4 @@
+import { BadRequest } from "http-errors"
 import { dtos } from "$/utils"
 import { RouteHandler } from "$/types"
 import * as schemas from "./schemas"
@@ -16,6 +17,7 @@ export const updateRole: RouteHandler<{
     params: schemas.UpdateRoleParams
     body: schemas.UpdateRoleBody
 }> = async (app, { params, body }) => {
+    if ([1, 2].includes(params.id)) throw new BadRequest("Role with such ID is protected")
     const role = await app.prisma.role.update({ where: { id: params.id }, data: body })
     return { payload: dtos.role(role) }
 }
