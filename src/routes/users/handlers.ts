@@ -1,5 +1,5 @@
 import { Prisma } from "@prisma/client"
-import { dtos, getItemsPage } from "$/utils"
+import { getItemsPage, models } from "$/utils"
 import { RouteHandler } from "$/types"
 import * as schemas from "./schemas"
 
@@ -19,13 +19,13 @@ export const getUsers: RouteHandler<{ query: schemas.GetUsersQuery }> = async (a
             include: { role: true }
         })
 
-        return { totalItems, items: users.map(dtos.user) }
+        return { totalItems, items: users.map(models.user.dto) }
     })
 
     return { payload: page }
 }
 
 export const getUser: RouteHandler<{ params: schemas.GetUserParams }> = async (app, { params }) => {
-    const user = await app.getUser(params.id)
-    return { payload: dtos.user(user) }
+    const user = await models.user.get(app, params.id)
+    return { payload: models.user.dto(user) }
 }

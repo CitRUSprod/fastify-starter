@@ -2,6 +2,7 @@ import { FastifyInstance, FastifyPluginCallback } from "fastify"
 import { FastifyAuthFunction } from "@fastify/auth"
 import { Forbidden } from "http-errors"
 import { Permission } from "@prisma/client"
+import { models } from "$/utils"
 
 declare module "fastify" {
     interface FastifyInstance {
@@ -13,7 +14,7 @@ export const verifyPermission: FastifyPluginCallback = (app, options, done) => {
     app.decorate<FastifyInstance["verifyPermission"]>(
         "verifyPermission",
         permission => async req => {
-            const { role } = await app.getUser(req.user.id)
+            const { role } = await models.user.get(app, req.user.id)
             const allowed = role.name === "admin" || role.permissions.includes(permission)
             if (!allowed) throw new Forbidden("No access")
         }

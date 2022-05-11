@@ -1,9 +1,8 @@
 import { Forbidden } from "http-errors"
 import { Prisma } from "@prisma/client"
-import { dtos, getItemsPage } from "$/utils"
+import { getItemsPage, models } from "$/utils"
 import { RouteHandler, UserData } from "$/types"
 import * as schemas from "./schemas"
-import * as utils from "./utils"
 
 export const getPosts: RouteHandler<{ query: schemas.GetPostsQuery }> = async (app, { query }) => {
     const page = await getItemsPage(query.page, query.perPage, async (skip, take) => {
@@ -20,7 +19,7 @@ export const getPosts: RouteHandler<{ query: schemas.GetPostsQuery }> = async (a
             include: { author: true }
         })
 
-        return { totalItems, items: posts.map(dtos.post) }
+        return { totalItems, items: posts.map(models.post.dto) }
     })
 
     return { payload: page }
@@ -35,18 +34,18 @@ export const createPost: RouteHandler<{
         include: { author: true }
     })
 
-    return { payload: dtos.post(post) }
+    return { payload: models.post.dto(post) }
 }
 
 export const getPost: RouteHandler<{ params: schemas.GetPostParams }> = async (app, { params }) => {
-    await utils.getPost(app, params.id)
+    await models.post.get(app, params.id)
 
     const post = (await app.prisma.post.findFirst({
         where: { id: params.id },
         include: { author: true }
     }))!
 
-    return { payload: dtos.post(post) }
+    return { payload: models.post.dto(post) }
 }
 
 export const updatePost: RouteHandler<{
@@ -54,7 +53,7 @@ export const updatePost: RouteHandler<{
     params: schemas.UpdatePostParams
     body: schemas.UpdatePostBody
 }> = async (app, { userData, params, body }) => {
-    const post = await utils.getPost(app, params.id)
+    const post = await models.post.get(app, params.id)
 
     if (post.authorId === userData.id) {
         const updatedPost = await app.prisma.post.update({
@@ -63,7 +62,7 @@ export const updatePost: RouteHandler<{
             include: { author: true }
         })
 
-        return { payload: dtos.post(updatedPost) }
+        return { payload: models.post.dto(updatedPost) }
     } else {
         throw new Forbidden("No access")
     }
@@ -73,7 +72,7 @@ export const deletePost: RouteHandler<{
     userData: UserData
     params: schemas.DeletePostParams
 }> = async (app, { userData, params }) => {
-    const post = await utils.getPost(app, params.id)
+    const post = await models.post.get(app, params.id)
 
     if (post.authorId === userData.id) {
         const deletedPost = await app.prisma.post.delete({
@@ -81,7 +80,7 @@ export const deletePost: RouteHandler<{
             include: { author: true }
         })
 
-        return { payload: dtos.post(deletedPost) }
+        return { payload: models.post.dto(deletedPost) }
     } else {
         throw new Forbidden("No access")
     }

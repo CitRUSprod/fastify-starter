@@ -2,7 +2,7 @@ import { BadRequest, InternalServerError } from "http-errors"
 import argon2 from "argon2"
 import { v4 as createUuid } from "uuid"
 import { TokenTtl } from "$/enums"
-import { env, dtos, sendEmail } from "$/utils"
+import { env, sendEmail, models } from "$/utils"
 import { UserData, ReplyCookie, RouteHandler } from "$/types"
 import * as schemas from "./schemas"
 import * as utils from "./utils"
@@ -53,7 +53,7 @@ export const login: RouteHandler<{ body: schemas.LoginBody }> = async (app, { bo
 }
 
 export const getMe: RouteHandler<{ userData: UserData }> = async (app, { userData }) => ({
-    payload: dtos.user(userData)
+    payload: models.user.dto(userData)
 })
 
 export const logout: RouteHandler<{ cookies: schemas.LogoutCookies }> = async (
