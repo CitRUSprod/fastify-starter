@@ -40,6 +40,19 @@ export const authRoutes: FastifyPluginCallback = (app, options, done) => {
         }
     })
 
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    app.patch<{ Body: schemas.UpdateMeBody }>("/me", {
+        schema: {
+            tags: ["auth"],
+            body: schemas.updateMeBody
+        },
+        preHandler: app.auth([app.verifyAuth]),
+        async handler(req, reply) {
+            const data = await handlers.updateMe(app, { userData: req.userData, body: req.body })
+            await reply.sendData(data)
+        }
+    })
+
     app.post("/logout", {
         schema: {
             tags: ["auth"]

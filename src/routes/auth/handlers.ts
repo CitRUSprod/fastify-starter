@@ -56,6 +56,23 @@ export const getMe: RouteHandler<{ userData: UserData }> = async (app, { userDat
     payload: models.user.dto(userData)
 })
 
+export const updateMe: RouteHandler<{ userData: UserData; body: schemas.UpdateMeBody }> = async (
+    app,
+    { userData, body }
+) => {
+    const updatedUser = await app.prisma.user.update({
+        where: { id: userData.id },
+        data: {
+            email: body.email,
+            username: body.username,
+            confirmedEmail: body.email === undefined ? undefined : false
+        },
+        include: { role: true }
+    })
+
+    return { payload: models.user.dto(updatedUser) }
+}
+
 export const logout: RouteHandler<{ cookies: schemas.LogoutCookies }> = async (
     app,
     { cookies }

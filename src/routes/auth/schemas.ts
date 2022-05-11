@@ -26,6 +26,18 @@ export const loginBody = Type.Strict(
 
 export type LoginBody = Static<typeof loginBody>
 
+export const updateMeBody = Type.Strict(
+    Type.Object(
+        {
+            email: Type.Optional(schemas.models.user.email()),
+            username: Type.Optional(schemas.models.user.username())
+        },
+        { additionalProperties: false, minProperties: 1 }
+    )
+)
+
+export type UpdateMeBody = Static<typeof updateMeBody>
+
 export const logoutCookies = Type.Strict(
     Type.Object(
         {
