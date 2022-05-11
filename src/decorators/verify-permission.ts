@@ -15,7 +15,7 @@ export const verifyPermission: FastifyPluginCallback = (app, options, done) => {
         "verifyPermission",
         permission => async req => {
             const { role } = await models.user.get(app, req.user.id)
-            const allowed = role.name === "admin" || role.permissions.includes(permission)
+            const allowed = role.permissions.includes(permission)
             if (!allowed) throw new Forbidden("No access")
         }
     )

@@ -25,3 +25,25 @@ export const getUserParams = Type.Strict(
 )
 
 export type GetUserParams = Static<typeof getUserParams>
+
+export const banUserParams = Type.Strict(
+    Type.Object(
+        {
+            id: schemas.id()
+        },
+        { additionalProperties: false }
+    )
+)
+
+export type BanUserParams = Static<typeof banUserParams>
+
+export const unbanUserParams = Type.Strict(
+    Type.Object(
+        {
+            id: schemas.id()
+        },
+        { additionalProperties: false }
+    )
+)
+
+export type UnbanUserParams = Static<typeof unbanUserParams>
