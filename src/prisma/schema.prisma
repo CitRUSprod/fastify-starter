@@ -10,6 +10,8 @@ generator client {
 enum Permission {
     DeleteOtherUserPost
     BanUser
+    CreateRole
+    GetOtherUserEmail
 }
 
 model Role {

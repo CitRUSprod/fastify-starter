@@ -34,7 +34,12 @@ export const usersRoutes: FastifyPluginCallback = (app, options, done) => {
             tags: ["users"],
             params: schemas.banUserParams
         },
-        preHandler: app.auth([app.verifyAuth, app.verifyPermission(Permission.BanUser)]),
+        preHandler: app.auth(
+            [app.verifyAuth, app.verifyConfirmedEmail, app.verifyPermission(Permission.BanUser)],
+            {
+                relation: "and"
+            }
+        ),
         async handler(req, reply) {
             const data = await handlers.banUser(app, { params: req.params })
             await reply.sendData(data)
@@ -47,7 +52,12 @@ export const usersRoutes: FastifyPluginCallback = (app, options, done) => {
             tags: ["users"],
             params: schemas.unbanUserParams
         },
-        preHandler: app.auth([app.verifyAuth, app.verifyPermission(Permission.BanUser)]),
+        preHandler: app.auth(
+            [app.verifyAuth, app.verifyConfirmedEmail, app.verifyPermission(Permission.BanUser)],
+            {
+                relation: "and"
+            }
+        ),
         async handler(req, reply) {
             const data = await handlers.unbanUser(app, { params: req.params })
             await reply.sendData(data)

@@ -1,7 +1,7 @@
 import { BadRequest } from "http-errors"
-import { Prisma } from "@prisma/client"
+import { Prisma, Permission } from "@prisma/client"
 import { getItemsPage, models } from "$/utils"
-import { RouteHandler } from "$/types"
+import { PartialUserData, RouteHandler } from "$/types"
 import * as schemas from "./schemas"
 
 export const getUsers: RouteHandler<{ query: schemas.GetUsersQuery }> = async (app, { query }) => {
@@ -27,7 +27,8 @@ export const getUsers: RouteHandler<{ query: schemas.GetUsersQuery }> = async (a
 }
 
 export const getUser: RouteHandler<{ params: schemas.GetUserParams }> = async (app, { params }) => {
-    const user = await models.user.get(app, params.id)
+    const user: PartialUserData = await models.user.get(app, params.id)
+    if (!user.role.permissions.includes(Permission.GetOtherUserEmail)) delete user.email
     return { payload: models.user.dto(user) }
 }
 
@@ -38,7 +39,7 @@ export const banUser: RouteHandler<{ params: schemas.BanUserParams }> = async (a
 
     const bannedUser = await app.prisma.user.update({
         where: { id: params.id },
-        data: { banned: true },
+        data: { roleId: 1, banned: true },
         include: { role: true }
     })
 

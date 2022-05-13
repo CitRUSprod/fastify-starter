@@ -1,9 +1,9 @@
 import { FastifyInstance } from "fastify"
 import { BadRequest } from "http-errors"
 import { JsonObject } from "type-fest"
-import { UserData } from "$/types"
+import { PartialUserData } from "$/types"
 
-export function dto(user: UserData): JsonObject {
+export function dto(user: PartialUserData): JsonObject {
     return {
         id: user.id,
         email: user.email,

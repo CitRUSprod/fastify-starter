@@ -1,5 +1,5 @@
 import { Forbidden } from "http-errors"
-import { Prisma } from "@prisma/client"
+import { Prisma, Permission } from "@prisma/client"
 import { getItemsPage, models } from "$/utils"
 import { RouteHandler, UserData } from "$/types"
 import * as schemas from "./schemas"
@@ -16,7 +16,7 @@ export const getPosts: RouteHandler<{ query: schemas.GetPostsQuery }> = async (a
             take,
             where,
             orderBy: query.sort && { [query.sort]: query.order ?? "asc" },
-            include: { author: true }
+            include: { author: { include: { role: true } } }
         })
 
         return { totalItems, items: posts.map(models.post.dto) }
@@ -31,20 +31,14 @@ export const createPost: RouteHandler<{
 }> = async (app, { userData, body }) => {
     const post = await app.prisma.post.create({
         data: { ...body, authorId: userData.id, creationDate: new Date() },
-        include: { author: true }
+        include: { author: { include: { role: true } } }
     })
 
     return { payload: models.post.dto(post) }
 }
 
 export const getPost: RouteHandler<{ params: schemas.GetPostParams }> = async (app, { params }) => {
-    await models.post.get(app, params.id)
-
-    const post = (await app.prisma.post.findFirst({
-        where: { id: params.id },
-        include: { author: true }
-    }))!
-
+    const post = await models.post.get(app, params.id)
     return { payload: models.post.dto(post) }
 }
 
@@ -59,7 +53,7 @@ export const updatePost: RouteHandler<{
         const updatedPost = await app.prisma.post.update({
             where: { id: params.id },
             data: { title: body.title, content: body.content, editingDate: new Date() },
-            include: { author: true }
+            include: { author: { include: { role: true } } }
         })
 
         return { payload: models.post.dto(updatedPost) }
@@ -74,10 +68,13 @@ export const deletePost: RouteHandler<{
 }> = async (app, { userData, params }) => {
     const post = await models.post.get(app, params.id)
 
-    if (post.authorId === userData.id) {
+    if (
+        post.authorId === userData.id ||
+        userData.role.permissions.includes(Permission.DeleteOtherUserPost)
+    ) {
         const deletedPost = await app.prisma.post.delete({
             where: { id: params.id },
-            include: { author: true }
+            include: { author: { include: { role: true } } }
         })
 
         return { payload: models.post.dto(deletedPost) }

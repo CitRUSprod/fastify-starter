@@ -13,6 +13,7 @@ client.$connect().then(async () => {
             username: "Admin",
             password,
             roleId: 2,
+            confirmedEmail: true,
             registrationDate: new Date()
         }
     })

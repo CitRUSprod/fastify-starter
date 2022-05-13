@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "Permission" AS ENUM ('DeleteOtherUserPost', 'BanUser');
+CREATE TYPE "Permission" AS ENUM ('DeleteOtherUserPost', 'BanUser', 'CreateRole', 'GetOtherUserEmail');
 
 -- CreateTable
 CREATE TABLE "Role" (

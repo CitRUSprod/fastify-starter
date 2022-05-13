@@ -21,7 +21,9 @@ export const postsRoutes: FastifyPluginCallback = (app, options, done) => {
             tags: ["posts"],
             body: schemas.createPostBody
         },
-        preHandler: app.auth([app.verifyAuth]),
+        preHandler: app.auth([app.verifyAuth, app.verifyConfirmedEmail, app.verifyNotBanned], {
+            relation: "and"
+        }),
         async handler(req, reply) {
             const data = await handlers.createPost(app, { userData: req.userData, body: req.body })
             await reply.sendData(data)
@@ -47,7 +49,9 @@ export const postsRoutes: FastifyPluginCallback = (app, options, done) => {
             params: schemas.updatePostParams,
             body: schemas.updatePostBody
         },
-        preHandler: app.auth([app.verifyAuth]),
+        preHandler: app.auth([app.verifyAuth, app.verifyConfirmedEmail, app.verifyNotBanned], {
+            relation: "and"
+        }),
         async handler(req, reply) {
             const data = await handlers.updatePost(app, {
                 userData: req.userData,
@@ -64,7 +68,9 @@ export const postsRoutes: FastifyPluginCallback = (app, options, done) => {
             tags: ["posts"],
             params: schemas.deletePostParams
         },
-        preHandler: app.auth([app.verifyAuth]),
+        preHandler: app.auth([app.verifyAuth, app.verifyConfirmedEmail, app.verifyNotBanned], {
+            relation: "and"
+        }),
         async handler(req, reply) {
             const data = await handlers.deletePost(app, {
                 userData: req.userData,

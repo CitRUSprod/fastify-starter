@@ -1,4 +1,5 @@
 import { FastifyPluginCallback } from "fastify"
+import { Permission } from "@prisma/client"
 import * as schemas from "./schemas"
 import * as handlers from "./handlers"
 
@@ -19,7 +20,12 @@ export const rolesRoutes: FastifyPluginCallback = (app, options, done) => {
             tags: ["roles"],
             body: schemas.createRoleBody
         },
-        preHandler: app.auth([app.verifyAuth]),
+        preHandler: app.auth(
+            [app.verifyAuth, app.verifyConfirmedEmail, app.verifyPermission(Permission.CreateRole)],
+            {
+                relation: "and"
+            }
+        ),
         async handler(req, reply) {
             const data = await handlers.createRole(app, { body: req.body })
             await reply.sendData(data)
@@ -33,7 +39,12 @@ export const rolesRoutes: FastifyPluginCallback = (app, options, done) => {
             params: schemas.updateRoleParams,
             body: schemas.updateRoleBody
         },
-        preHandler: app.auth([app.verifyAuth]),
+        preHandler: app.auth(
+            [app.verifyAuth, app.verifyConfirmedEmail, app.verifyPermission(Permission.CreateRole)],
+            {
+                relation: "and"
+            }
+        ),
         async handler(req, reply) {
             const data = await handlers.updateRole(app, { params: req.params, body: req.body })
             await reply.sendData(data)
@@ -46,7 +57,12 @@ export const rolesRoutes: FastifyPluginCallback = (app, options, done) => {
             tags: ["roles"],
             params: schemas.deleteRoleParams
         },
-        preHandler: app.auth([app.verifyAuth]),
+        preHandler: app.auth(
+            [app.verifyAuth, app.verifyConfirmedEmail, app.verifyPermission(Permission.CreateRole)],
+            {
+                relation: "and"
+            }
+        ),
         async handler(req, reply) {
             const data = await handlers.deleteRole(app, { params: req.params })
             await reply.sendData(data)

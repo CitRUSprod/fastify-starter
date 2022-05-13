@@ -4,6 +4,8 @@ import { prisma } from "./prisma"
 import { sendData } from "./send-data"
 import { verifyAuth } from "./verify-auth"
 import { verifyPermission } from "./verify-permission"
+import { verifyConfirmedEmail } from "./verify-confirmed-email"
+import { verifyNotBanned } from "./verify-not-banned"
 
 function changeScope(fn: FastifyPluginCallback) {
     return fp(fn)
@@ -14,6 +16,8 @@ export const decorators = changeScope((app, options, done) => {
         .register(changeScope(sendData))
         .register(changeScope(verifyAuth))
         .register(changeScope(verifyPermission))
+        .register(changeScope(verifyConfirmedEmail))
+        .register(changeScope(verifyNotBanned))
 
     done()
 })

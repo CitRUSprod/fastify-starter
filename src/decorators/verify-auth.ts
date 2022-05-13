@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyPluginCallback } from "fastify"
 import { FastifyAuthFunction } from "@fastify/auth"
-import { BadRequest } from "http-errors"
+import { InternalServerError } from "http-errors"
 import { UserPayload, UserData } from "$/types"
 
 declare module "fastify" {
@@ -26,7 +26,7 @@ export const verifyAuth: FastifyPluginCallback = (app, options, done) => {
             where: { id: payload.id },
             include: { role: true }
         })
-        if (!user) throw new BadRequest("User with such ID was not found")
+        if (!user) throw new InternalServerError("User with such ID was not found")
         req.userData = user
     })
 

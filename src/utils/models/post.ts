@@ -18,7 +18,10 @@ export function dto(post: Post & { author: User }): JsonObject {
 }
 
 export async function get(app: FastifyInstance, id: number) {
-    const post = await app.prisma.post.findFirst({ where: { id } })
+    const post = await app.prisma.post.findFirst({
+        where: { id },
+        include: { author: { include: { role: true } } }
+    })
     if (!post) throw new BadRequest("Post with such ID was not found")
     return post
 }
