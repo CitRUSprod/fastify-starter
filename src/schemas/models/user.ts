@@ -1,7 +1,7 @@
 import { Type } from "@sinclair/typebox"
 
 export function email() {
-    return Type.String({ minLength: 6, transform: ["trim", "toLowerCase"] })
+    return Type.String({ format: "email", transform: ["trim", "toLowerCase"] })
 }
 
 export function username() {
@@ -9,5 +9,5 @@ export function username() {
 }
 
 export function password() {
-    return Type.String({ minLength: 3 })
+    return Type.String({ minLength: 8, transform: ["trim"] })
 }

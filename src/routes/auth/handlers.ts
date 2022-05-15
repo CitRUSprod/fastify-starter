@@ -165,7 +165,7 @@ export const sendConfirmationEmail: RouteHandler<{ userData: UserData }> = async
         })
     }
 
-    const url = env.EMAIL_CONFIRMATION_URL.replace(/{{token}}/g, token)
+    const url = env.EMAIL_CONFIRMATION_URL.replace(/{token}/g, token)
     const subject = "Email confirmation"
     const message = `
         <div>
@@ -242,7 +242,7 @@ export const sendPasswordResetEmail: RouteHandler<{
         })
     }
 
-    const url = env.PASSWORD_RESET_URL.replace(/{{token}}/g, token)
+    const url = env.PASSWORD_RESET_URL.replace(/{token}/g, token)
     const subject = "Password reset"
     const message = `
         <div>

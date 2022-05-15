@@ -26,6 +26,7 @@ export const deleteRole: RouteHandler<{ params: schemas.UpdateRoleParams }> = as
     app,
     { params }
 ) => {
+    if ([1, 2].includes(params.id)) throw new BadRequest("Role with such ID is protected")
     const role = await app.prisma.role.delete({ where: { id: params.id } })
     return { payload: models.role.dto(role) }
 }

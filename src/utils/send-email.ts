@@ -7,12 +7,12 @@ const mailer = nodemailer.createTransport(
         port: env.MAILER_PORT,
         secure: env.MAILER_PORT === 465,
         auth: {
-            user: env.MAILER_USERNAME,
+            user: env.MAILER_EMAIL,
             pass: env.MAILER_PASSWORD
         }
     },
     {
-        from: `${env.MAILER_NAME} <${env.MAILER_USERNAME}>`
+        from: `${env.MAILER_NAME} <${env.MAILER_EMAIL}>`
     }
 )
 

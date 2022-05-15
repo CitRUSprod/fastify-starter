@@ -1,5 +1,6 @@
 import Ajv, { ErrorObject } from "ajv"
 import ajvKeywords from "ajv-keywords"
+import ajvFormats from "ajv-formats"
 import { Static, TSchema } from "@sinclair/typebox"
 import { JsonValue } from "type-fest"
 import { AggregateAjvError } from "@segment/ajv-human-errors"
@@ -7,10 +8,13 @@ import { AggregateAjvError } from "@segment/ajv-human-errors"
 export const ajv = new Ajv({
     removeAdditional: true,
     useDefaults: true,
-    coerceTypes: true
+    coerceTypes: true,
+    allErrors: true,
+    verbose: true
 })
 
 ajvKeywords(ajv, ["transform"])
+ajvFormats(ajv, ["email", "hostname", "uri-template"])
 
 export function normalizeAjvErrors(errors: Array<ErrorObject>, scope?: string) {
     const humanErrors = new AggregateAjvError(errors) as any
