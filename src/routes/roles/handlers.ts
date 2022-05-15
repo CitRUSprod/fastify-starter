@@ -17,16 +17,20 @@ export const updateRole: RouteHandler<{
     params: schemas.UpdateRoleParams
     body: schemas.UpdateRoleBody
 }> = async (app, { params, body }) => {
-    if ([1, 2].includes(params.id)) throw new BadRequest("Role with such ID is protected")
-    const role = await app.prisma.role.update({ where: { id: params.id }, data: body })
-    return { payload: models.role.dto(role) }
+    const role = await models.role.get(app, params.id)
+    if (role.protected) throw new BadRequest("Role with such ID is protected")
+
+    const updatedRole = await app.prisma.role.update({ where: { id: params.id }, data: body })
+    return { payload: models.role.dto(updatedRole) }
 }
 
 export const deleteRole: RouteHandler<{ params: schemas.UpdateRoleParams }> = async (
     app,
     { params }
 ) => {
-    if ([1, 2].includes(params.id)) throw new BadRequest("Role with such ID is protected")
-    const role = await app.prisma.role.delete({ where: { id: params.id } })
-    return { payload: models.role.dto(role) }
+    const role = await models.role.get(app, params.id)
+    if (role.protected) throw new BadRequest("Role with such ID is protected")
+
+    const updatedRole = await app.prisma.role.delete({ where: { id: params.id } })
+    return { payload: models.role.dto(updatedRole) }
 }

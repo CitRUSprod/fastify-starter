@@ -12,12 +12,14 @@ enum Permission {
     BanUser
     CreateRole
     GetOtherUserEmail
+    AssignRole
 }
 
 model Role {
     id Int @id @default(autoincrement())
     name String @unique
     permissions Permission[]
+    protected Boolean @default(false)
     users User[]
 }
 

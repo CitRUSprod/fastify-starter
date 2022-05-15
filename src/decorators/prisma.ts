@@ -48,12 +48,23 @@ export const prisma: FastifyPluginCallback = (app, options, done) => {
         } else if (params.model === Prisma.ModelName.User) {
             if (actionsWithOne.includes(params.action)) {
                 const user = result
-                setAllPermissionsForAdmin(user.role)
+                setAllPermissionsForAdmin(user?.role)
             } else if (actionsWithMany.includes(params.action)) {
                 const users = result
 
                 for (const user of users) {
-                    setAllPermissionsForAdmin(user.role)
+                    setAllPermissionsForAdmin(user?.role)
+                }
+            }
+        } else if (params.model === Prisma.ModelName.Post) {
+            if (actionsWithOne.includes(params.action)) {
+                const post = result
+                setAllPermissionsForAdmin(post?.author?.role)
+            } else if (actionsWithMany.includes(params.action)) {
+                const posts = result
+
+                for (const post of posts) {
+                    setAllPermissionsForAdmin(post?.author?.role)
                 }
             }
         }

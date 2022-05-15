@@ -26,6 +26,18 @@ export const getUserParams = Type.Strict(
 
 export type GetUserParams = Static<typeof getUserParams>
 
+export const assignRoleToUserParams = Type.Strict(
+    Type.Object(
+        {
+            id: schemas.id(),
+            roleId: schemas.id()
+        },
+        { additionalProperties: false }
+    )
+)
+
+export type AssignRoleToUserParams = Static<typeof assignRoleToUserParams>
+
 export const banUserParams = Type.Strict(
     Type.Object(
         {

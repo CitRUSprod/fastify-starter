@@ -29,6 +29,22 @@ export const usersRoutes: FastifyPluginCallback = (app, options, done) => {
     })
 
     // eslint-disable-next-line @typescript-eslint/naming-convention
+    app.post<{ Params: schemas.AssignRoleToUserParams }>("/:id/role/:roleId", {
+        schema: {
+            tags: ["users"],
+            params: schemas.assignRoleToUserParams
+        },
+        preHandler: app.auth(
+            [app.verifyAuth, app.verifyConfirmedEmail, app.verifyPermission(Permission.AssignRole)],
+            { relation: "and" }
+        ),
+        async handler(req, reply) {
+            const data = await handlers.assignRoleToUser(app, { params: req.params })
+            await reply.sendData(data)
+        }
+    })
+
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     app.post<{ Params: schemas.BanUserParams }>("/:id/ban", {
         schema: {
             tags: ["users"],
@@ -36,9 +52,7 @@ export const usersRoutes: FastifyPluginCallback = (app, options, done) => {
         },
         preHandler: app.auth(
             [app.verifyAuth, app.verifyConfirmedEmail, app.verifyPermission(Permission.BanUser)],
-            {
-                relation: "and"
-            }
+            { relation: "and" }
         ),
         async handler(req, reply) {
             const data = await handlers.banUser(app, { params: req.params })
@@ -54,9 +68,7 @@ export const usersRoutes: FastifyPluginCallback = (app, options, done) => {
         },
         preHandler: app.auth(
             [app.verifyAuth, app.verifyConfirmedEmail, app.verifyPermission(Permission.BanUser)],
-            {
-                relation: "and"
-            }
+            { relation: "and" }
         ),
         async handler(req, reply) {
             const data = await handlers.unbanUser(app, { params: req.params })

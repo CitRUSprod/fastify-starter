@@ -2,7 +2,7 @@ import { Permission } from "@prisma/client"
 import { Type } from "@sinclair/typebox"
 
 export function name() {
-    return Type.String({ minLength: 1, transform: ["trim"] })
+    return Type.String({ minLength: 1, transform: ["trim", "toLowerCase"] })
 }
 
 export function permissions() {

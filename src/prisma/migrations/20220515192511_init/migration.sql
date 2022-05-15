@@ -1,11 +1,12 @@
 -- CreateEnum
-CREATE TYPE "Permission" AS ENUM ('DeleteOtherUserPost', 'BanUser', 'CreateRole', 'GetOtherUserEmail');
+CREATE TYPE "Permission" AS ENUM ('DeleteOtherUserPost', 'BanUser', 'CreateRole', 'GetOtherUserEmail', 'AssignRole');
 
 -- CreateTable
 CREATE TABLE "Role" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "permissions" "Permission"[],
+    "protected" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "Role_pkey" PRIMARY KEY ("id")
 );

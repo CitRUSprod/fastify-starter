@@ -22,9 +22,7 @@ export const rolesRoutes: FastifyPluginCallback = (app, options, done) => {
         },
         preHandler: app.auth(
             [app.verifyAuth, app.verifyConfirmedEmail, app.verifyPermission(Permission.CreateRole)],
-            {
-                relation: "and"
-            }
+            { relation: "and" }
         ),
         async handler(req, reply) {
             const data = await handlers.createRole(app, { body: req.body })
@@ -41,9 +39,7 @@ export const rolesRoutes: FastifyPluginCallback = (app, options, done) => {
         },
         preHandler: app.auth(
             [app.verifyAuth, app.verifyConfirmedEmail, app.verifyPermission(Permission.CreateRole)],
-            {
-                relation: "and"
-            }
+            { relation: "and" }
         ),
         async handler(req, reply) {
             const data = await handlers.updateRole(app, { params: req.params, body: req.body })
@@ -59,9 +55,7 @@ export const rolesRoutes: FastifyPluginCallback = (app, options, done) => {
         },
         preHandler: app.auth(
             [app.verifyAuth, app.verifyConfirmedEmail, app.verifyPermission(Permission.CreateRole)],
-            {
-                relation: "and"
-            }
+            { relation: "and" }
         ),
         async handler(req, reply) {
             const data = await handlers.deleteRole(app, { params: req.params })
