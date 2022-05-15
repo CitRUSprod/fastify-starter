@@ -7,10 +7,10 @@ import { postsRoutes } from "./posts"
 
 export const routes: FastifyPluginCallback = (app, options, done) => {
     app.register(authRoutes, { prefix: "/auth" })
-    app.register(usersRoutes, { prefix: "/users" })
-    app.register(rolesRoutes, { prefix: "/roles" })
-    app.register(permissionsRoutes, { prefix: "/permissions" })
-    app.register(postsRoutes, { prefix: "/posts" })
+        .register(permissionsRoutes, { prefix: "/permissions" })
+        .register(rolesRoutes, { prefix: "/roles" })
+        .register(usersRoutes, { prefix: "/users" })
+        .register(postsRoutes, { prefix: "/posts" })
 
     done()
 }

@@ -35,8 +35,7 @@ app.register(jwt, { secret: env.JWT_SECRET, cookie: { cookieName: "accessToken",
     .register(auth)
     .register(socketIo)
 
-app.register(decorators)
-app.register(routes)
+app.register(decorators).register(routes)
 
 app.listen(port, "0.0.0.0", err => {
     if (err) throw err
