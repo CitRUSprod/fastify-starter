@@ -11,7 +11,7 @@ cache:
         - ~/.pnpm-store
 
 before_install:
-    - npm i -g pnpm
+    - npm add -g pnpm
     - pnpm config set store-dir ~/.pnpm-store
 
 install:
