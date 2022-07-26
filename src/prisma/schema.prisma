@@ -50,7 +50,7 @@ model RefreshToken {
 model EmailConfirmationToken {
     id Int @id @default(autoincrement())
     token String @unique
-    userId Int
+    userId Int @unique
     user User @relation(fields: [userId], references: [id])
     creationDate DateTime
 }
@@ -58,7 +58,7 @@ model EmailConfirmationToken {
 model PasswordResetToken {
     id Int @id @default(autoincrement())
     token String @unique
-    userId Int
+    userId Int @unique
     user User @relation(fields: [userId], references: [id])
     creationDate DateTime
 }

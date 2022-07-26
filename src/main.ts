@@ -37,8 +37,14 @@ app.register(jwt, { secret: env.JWT_SECRET, cookie: { cookieName: "accessToken",
 
 app.register(decorators).register(routes)
 
-app.listen(port, "0.0.0.0", err => {
-    if (err) throw err
+async function start() {
+    await app.ready()
+    await app.listen({
+        host: "0.0.0.0",
+        port
+    })
     initSockets(app)
     console.log(`Running on http://localhost:${port}`)
-})
+}
+
+start()

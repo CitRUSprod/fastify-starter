@@ -15,7 +15,7 @@ export const getPosts: RouteHandler<{ query: schemas.GetPostsQuery }> = async (a
             skip,
             take,
             where,
-            orderBy: query.sort && { [query.sort]: query.order ?? "asc" },
+            orderBy: query.sort ? { [query.sort]: query.order ?? "asc" } : undefined,
             include: { author: { include: { role: true } } }
         })
 

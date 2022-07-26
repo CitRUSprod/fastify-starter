@@ -1,8 +1,8 @@
-import { Type, TValue } from "@sinclair/typebox"
+import { Type, TLiteralValue } from "@sinclair/typebox"
 
 const order = ["asc", "desc"] as const
 
-export function sorting<T extends TValue>(field: T, ...fields: Array<T>) {
+export function sorting<T extends TLiteralValue>(field: T, ...fields: Array<T>) {
     return Type.Object(
         {
             sort: Type.Optional(
