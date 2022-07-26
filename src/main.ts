@@ -13,8 +13,8 @@ const port = 6500
 
 const app = fastify()
 
-app.setValidatorCompiler(({ schema }) => ajv.compile(schema) as any)
-app.setSchemaErrorFormatter((errors, scope) => normalizeAjvErrors(errors as any, scope))
+app.setValidatorCompiler(({ schema }) => ajv.compile(schema))
+app.setSchemaErrorFormatter((errors, scope) => normalizeAjvErrors(errors, scope))
 
 if (env.ENABLE_DOCS) {
     app.register(swagger, {
