@@ -23,7 +23,10 @@ export const usersRoutes: FastifyPluginCallback = (app, options, done) => {
             params: schemas.getUserParams
         },
         async handler(req, reply) {
-            const data = await handlers.getUser(app, { params: req.params })
+            const data = await handlers.getUser(app, {
+                userData: req.userData,
+                params: req.params
+            })
             await reply.sendData(data)
         }
     })
