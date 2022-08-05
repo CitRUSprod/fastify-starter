@@ -4,7 +4,10 @@ import { getItemsPage, models } from "$/utils"
 import { UserData, PartialUserData, RouteHandler } from "$/types"
 import * as schemas from "./schemas"
 
-export const getUsers: RouteHandler<{ query: schemas.GetUsersQuery }> = async (app, { query }) => {
+export const getUsers: RouteHandler<{ userData: UserData; query: schemas.GetUsersQuery }> = async (
+    app,
+    { userData, query }
+) => {
     const page = await getItemsPage(query.page, query.perPage, async (skip, take) => {
         const where: Prisma.UserWhereInput = {
             email: { contains: query.email, mode: "insensitive" },
@@ -12,13 +15,17 @@ export const getUsers: RouteHandler<{ query: schemas.GetUsersQuery }> = async (a
         }
 
         const totalItems = await app.prisma.user.count({ where })
-        const users = await app.prisma.user.findMany({
+        const users: Array<PartialUserData> = await app.prisma.user.findMany({
             skip,
             take,
             where,
             orderBy: query.sort ? { [query.sort]: query.order ?? "asc" } : undefined,
             include: { role: true }
         })
+
+        for (const user of users) {
+            if (!userData.role.permissions.includes(Permission.GetOtherUserEmail)) delete user.email
+        }
 
         return { totalItems, items: users.map(models.user.dto) }
     })

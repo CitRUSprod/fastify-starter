@@ -7,9 +7,11 @@ export const permissionsRoutes: FastifyPluginCallback = (app, options, done) => 
         schema: {
             tags: ["permissions"]
         },
-        preHandler: app.auth([app.verifyAuth, app.verifyPermission(Permission.CreateRole)], {
-            relation: "and"
-        }),
+        preHandler: app.createPreHandler([
+            app.setUserData,
+            app.verifyAuth,
+            app.verifyPermission(Permission.CreateRole)
+        ]),
         async handler(req, reply) {
             const data = await handlers.getPermissions(app, {})
             await reply.sendData(data)

@@ -4,75 +4,78 @@ import * as schemas from "./schemas"
 import * as handlers from "./handlers"
 
 export const usersRoutes: FastifyPluginCallback = (app, options, done) => {
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     app.get<{ Querystring: schemas.GetUsersQuery }>("/", {
         schema: {
             tags: ["users"],
             querystring: schemas.getUsersQuery
         },
+        preHandler: app.createPreHandler([app.setUserData]),
         async handler(req, reply) {
-            const data = await handlers.getUsers(app, { query: req.query })
+            const data = await handlers.getUsers(app, { userData: req.userData!, query: req.query })
             await reply.sendData(data)
         }
     })
 
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     app.get<{ Params: schemas.GetUserParams }>("/:id", {
         schema: {
             tags: ["users"],
             params: schemas.getUserParams
         },
+        preHandler: app.createPreHandler([app.setUserData]),
         async handler(req, reply) {
             const data = await handlers.getUser(app, {
-                userData: req.userData,
+                userData: req.userData!,
                 params: req.params
             })
             await reply.sendData(data)
         }
     })
 
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     app.post<{ Params: schemas.AssignRoleToUserParams }>("/:id/role/:roleId", {
         schema: {
             tags: ["users"],
             params: schemas.assignRoleToUserParams
         },
-        preHandler: app.auth(
-            [app.verifyAuth, app.verifyConfirmedEmail, app.verifyPermission(Permission.AssignRole)],
-            { relation: "and" }
-        ),
+        preHandler: app.createPreHandler([
+            app.setUserData,
+            app.verifyAuth,
+            app.verifyConfirmedEmail,
+            app.verifyPermission(Permission.AssignRole)
+        ]),
         async handler(req, reply) {
             const data = await handlers.assignRoleToUser(app, { params: req.params })
             await reply.sendData(data)
         }
     })
 
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     app.post<{ Params: schemas.BanUserParams }>("/:id/ban", {
         schema: {
             tags: ["users"],
             params: schemas.banUserParams
         },
-        preHandler: app.auth(
-            [app.verifyAuth, app.verifyConfirmedEmail, app.verifyPermission(Permission.BanUser)],
-            { relation: "and" }
-        ),
+        preHandler: app.createPreHandler([
+            app.setUserData,
+            app.verifyAuth,
+            app.verifyConfirmedEmail,
+            app.verifyPermission(Permission.BanUser)
+        ]),
         async handler(req, reply) {
             const data = await handlers.banUser(app, { params: req.params })
             await reply.sendData(data)
         }
     })
 
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     app.post<{ Params: schemas.UnbanUserParams }>("/:id/unban", {
         schema: {
             tags: ["users"],
             params: schemas.unbanUserParams
         },
-        preHandler: app.auth(
-            [app.verifyAuth, app.verifyConfirmedEmail, app.verifyPermission(Permission.BanUser)],
-            { relation: "and" }
-        ),
+        preHandler: app.createPreHandler([
+            app.setUserData,
+            app.verifyAuth,
+            app.verifyConfirmedEmail,
+            app.verifyPermission(Permission.BanUser)
+        ]),
         async handler(req, reply) {
             const data = await handlers.unbanUser(app, { params: req.params })
             await reply.sendData(data)

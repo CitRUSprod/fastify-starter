@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-
 import { Type } from "@sinclair/typebox"
 import { parseByAjvSchema } from "./ajv"
 

@@ -5,7 +5,6 @@ import * as schemas from "./schemas"
 import * as handlers from "./handlers"
 
 export const authRoutes: FastifyPluginCallback = (app, options, done) => {
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     app.post<{ Body: schemas.RegisterBody }>("/register", {
         schema: {
             tags: ["auth"],
@@ -17,7 +16,6 @@ export const authRoutes: FastifyPluginCallback = (app, options, done) => {
         }
     })
 
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     app.post<{ Body: schemas.LoginBody }>("/login", {
         schema: {
             tags: ["auth"],
@@ -33,22 +31,21 @@ export const authRoutes: FastifyPluginCallback = (app, options, done) => {
         schema: {
             tags: ["auth"]
         },
-        preHandler: app.auth([app.verifyAuth]),
+        preHandler: app.createPreHandler([app.setUserData, app.verifyAuth]),
         async handler(req, reply) {
-            const data = await handlers.getMe(app, { userData: req.userData })
+            const data = await handlers.getMe(app, { userData: req.userData! })
             await reply.sendData(data)
         }
     })
 
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     app.patch<{ Body: schemas.UpdateMeBody }>("/me", {
         schema: {
             tags: ["auth"],
             body: schemas.updateMeBody
         },
-        preHandler: app.auth([app.verifyAuth]),
+        preHandler: app.createPreHandler([app.setUserData, app.verifyAuth]),
         async handler(req, reply) {
-            const data = await handlers.updateMe(app, { userData: req.userData, body: req.body })
+            const data = await handlers.updateMe(app, { userData: req.userData!, body: req.body })
             await reply.sendData(data)
         }
     })
@@ -93,14 +90,13 @@ export const authRoutes: FastifyPluginCallback = (app, options, done) => {
         schema: {
             tags: ["auth"]
         },
-        preHandler: app.auth([app.verifyAuth]),
+        preHandler: app.createPreHandler([app.setUserData, app.verifyAuth]),
         async handler(req, reply) {
-            const data = await handlers.sendConfirmationEmail(app, { userData: req.userData })
+            const data = await handlers.sendConfirmationEmail(app, { userData: req.userData! })
             await reply.sendData(data)
         }
     })
 
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     app.post<{ Params: schemas.ConfirmEmailParams }>("/email/confirm/:emailConfirmationToken", {
         schema: {
             tags: ["auth"],
@@ -112,23 +108,21 @@ export const authRoutes: FastifyPluginCallback = (app, options, done) => {
         }
     })
 
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     app.post<{ Body: schemas.ChangePasswordBody }>("/password/change", {
         schema: {
             tags: ["auth"],
             body: schemas.changePasswordBody
         },
-        preHandler: app.auth([app.verifyAuth]),
+        preHandler: app.createPreHandler([app.setUserData, app.verifyAuth]),
         async handler(req, reply) {
             const data = await handlers.changePassword(app, {
-                userData: req.userData,
+                userData: req.userData!,
                 body: req.body
             })
             await reply.sendData(data)
         }
     })
 
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     app.post<{ Body: schemas.SendPasswordResetEmailBody }>("/password/reset", {
         schema: {
             tags: ["auth"],
@@ -140,7 +134,6 @@ export const authRoutes: FastifyPluginCallback = (app, options, done) => {
         }
     })
 
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     app.post<{ Params: schemas.ResetPasswordParams; Body: schemas.ResetPasswordBody }>(
         "/password/reset/:passwordResetToken",
         {

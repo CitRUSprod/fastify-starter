@@ -10,7 +10,7 @@ declare module "fastify" {
 
 export const verifyConfirmedEmail: FastifyPluginCallback = (app, options, done) => {
     app.decorate<FastifyInstance["verifyConfirmedEmail"]>("verifyConfirmedEmail", async req => {
-        if (!req.userData.confirmedEmail) throw new Forbidden("Not confirmed email")
+        if (!req.userData!.confirmedEmail) throw new Forbidden("Not confirmed email")
     })
 
     done()
