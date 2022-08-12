@@ -27,57 +27,6 @@ export const authRoutes: FastifyPluginCallback = (app, options, done) => {
         }
     })
 
-    app.get("/me", {
-        schema: {
-            tags: ["auth"]
-        },
-        preHandler: app.createPreHandler([app.setUserData, app.verifyAuth]),
-        async handler(req, reply) {
-            const data = await handlers.getMe(app, { userData: req.userData! })
-            await reply.sendData(data)
-        }
-    })
-
-    app.patch<{ Body: schemas.UpdateMeBody }>("/me", {
-        schema: {
-            tags: ["auth"],
-            body: schemas.updateMeBody
-        },
-        preHandler: app.createPreHandler([app.setUserData, app.verifyAuth]),
-        async handler(req, reply) {
-            const data = await handlers.updateMe(app, { userData: req.userData!, body: req.body })
-            await reply.sendData(data)
-        }
-    })
-
-    app.post<{ Body: schemas.UploadAvatarBody }>("/avatar", {
-        schema: {
-            tags: ["auth"],
-            body: schemas.uploadAvatarBody
-        },
-        preHandler: app.createPreHandler([app.setUserData, app.verifyAuth]),
-        async handler(req, reply) {
-            const data = await handlers.uploadAvatar(app, {
-                userData: req.userData!,
-                body: req.body
-            })
-            await reply.sendData(data)
-        }
-    })
-
-    app.delete("/avatar", {
-        schema: {
-            tags: ["auth"]
-        },
-        preHandler: app.createPreHandler([app.setUserData, app.verifyAuth]),
-        async handler(req, reply) {
-            const data = await handlers.deleteAvatar(app, {
-                userData: req.userData!
-            })
-            await reply.sendData(data)
-        }
-    })
-
     app.post("/logout", {
         schema: {
             tags: ["auth"]
@@ -113,72 +62,6 @@ export const authRoutes: FastifyPluginCallback = (app, options, done) => {
             await reply.sendData(data)
         }
     })
-
-    app.post("/email/confirm", {
-        schema: {
-            tags: ["auth"]
-        },
-        preHandler: app.createPreHandler([app.setUserData, app.verifyAuth]),
-        async handler(req, reply) {
-            const data = await handlers.sendConfirmationEmail(app, { userData: req.userData! })
-            await reply.sendData(data)
-        }
-    })
-
-    app.post<{ Params: schemas.ConfirmEmailParams }>("/email/confirm/:emailConfirmationToken", {
-        schema: {
-            tags: ["auth"],
-            params: schemas.confirmEmailParams
-        },
-        async handler(req, reply) {
-            const data = await handlers.confirmEmail(app, { params: req.params })
-            await reply.sendData(data)
-        }
-    })
-
-    app.post<{ Body: schemas.ChangePasswordBody }>("/password/change", {
-        schema: {
-            tags: ["auth"],
-            body: schemas.changePasswordBody
-        },
-        preHandler: app.createPreHandler([app.setUserData, app.verifyAuth]),
-        async handler(req, reply) {
-            const data = await handlers.changePassword(app, {
-                userData: req.userData!,
-                body: req.body
-            })
-            await reply.sendData(data)
-        }
-    })
-
-    app.post<{ Body: schemas.SendPasswordResetEmailBody }>("/password/reset", {
-        schema: {
-            tags: ["auth"],
-            body: schemas.sendPasswordResetEmailBody
-        },
-        async handler(req, reply) {
-            const data = await handlers.sendPasswordResetEmail(app, { body: req.body })
-            await reply.sendData(data)
-        }
-    })
-
-    app.post<{ Params: schemas.ResetPasswordParams; Body: schemas.ResetPasswordBody }>(
-        "/password/reset/:passwordResetToken",
-        {
-            schema: {
-                tags: ["auth"],
-                params: schemas.resetPasswordParams,
-                body: schemas.resetPasswordBody
-            },
-            async handler(req, reply) {
-                const data = await handlers.resetPassword(app, {
-                    params: req.params,
-                    body: req.body
-                })
-                await reply.sendData(data)
-            }
-        }
-    )
 
     done()
 }
