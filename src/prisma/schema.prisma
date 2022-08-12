@@ -33,6 +33,7 @@ model User {
     confirmedEmail Boolean @default(false)
     banned Boolean @default(false)
     registrationDate DateTime
+    avatar String?
     refreshTokens RefreshToken[]
     emailConfirmationToken EmailConfirmationToken?
     passwordResetToken PasswordResetToken?

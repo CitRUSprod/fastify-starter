@@ -1,5 +1,8 @@
+import path from "path"
 import fastify from "fastify"
 import swagger from "@fastify/swagger"
+import staticPlugin from "@fastify/static"
+import multipart from "@fastify/multipart"
 import jwt from "@fastify/jwt"
 import cookie from "@fastify/cookie"
 import auth from "@fastify/auth"
@@ -30,7 +33,9 @@ if (env.ENABLE_DOCS) {
     })
 }
 
-app.register(jwt, { secret: env.JWT_SECRET, cookie: { cookieName: "accessToken", signed: false } })
+app.register(staticPlugin, { root: path.join(__dirname, "../storage"), prefix: "/storage" })
+    .register(multipart, { attachFieldsToBody: true })
+    .register(jwt, { secret: env.JWT_SECRET, cookie: { cookieName: "accessToken", signed: false } })
     .register(cookie)
     .register(auth)
     .register(socketIo)

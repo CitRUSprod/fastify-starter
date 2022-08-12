@@ -2,7 +2,7 @@ import { BadRequest, InternalServerError } from "http-errors"
 import argon2 from "argon2"
 import { v4 as createUuid } from "uuid"
 import { TokenTtl } from "$/enums"
-import { env, sendEmail, models } from "$/utils"
+import { env, writeImage, sendEmail, models } from "$/utils"
 import { UserData, ReplyCookie, RouteHandler } from "$/types"
 import * as schemas from "./schemas"
 import * as utils from "./utils"
@@ -71,6 +71,37 @@ export const updateMe: RouteHandler<{ userData: UserData; body: schemas.UpdateMe
     })
 
     return { payload: models.user.dto(updatedUser) }
+}
+
+export const uploadAvatar: RouteHandler<{
+    userData: UserData
+    body: schemas.UploadAvatarBody
+}> = async (app, { userData, body }) => {
+    if (userData.avatar) await utils.deleteAvatar(userData.avatar)
+
+    const avatar = await writeImage(body.img)
+
+    await app.prisma.user.update({
+        where: { id: userData.id },
+        data: { avatar }
+    })
+
+    return {}
+}
+
+export const deleteAvatar: RouteHandler<{
+    userData: UserData
+}> = async (app, { userData }) => {
+    if (!userData.avatar) throw new BadRequest("You do not have an avatar")
+
+    await utils.deleteAvatar(userData.avatar)
+
+    await app.prisma.user.update({
+        where: { id: userData.id },
+        data: { avatar: null }
+    })
+
+    return {}
 }
 
 export const logout: RouteHandler<{ cookies: schemas.LogoutCookies }> = async (

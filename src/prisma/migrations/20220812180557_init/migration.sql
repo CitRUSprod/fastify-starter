@@ -21,6 +21,7 @@ CREATE TABLE "User" (
     "confirmedEmail" BOOLEAN NOT NULL DEFAULT false,
     "banned" BOOLEAN NOT NULL DEFAULT false,
     "registrationDate" TIMESTAMP(3) NOT NULL,
+    "avatar" TEXT,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );

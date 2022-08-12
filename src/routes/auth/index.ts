@@ -50,6 +50,34 @@ export const authRoutes: FastifyPluginCallback = (app, options, done) => {
         }
     })
 
+    app.post<{ Body: schemas.UploadAvatarBody }>("/avatar", {
+        schema: {
+            tags: ["auth"],
+            body: schemas.uploadAvatarBody
+        },
+        preHandler: app.createPreHandler([app.setUserData, app.verifyAuth]),
+        async handler(req, reply) {
+            const data = await handlers.uploadAvatar(app, {
+                userData: req.userData!,
+                body: req.body
+            })
+            await reply.sendData(data)
+        }
+    })
+
+    app.delete("/avatar", {
+        schema: {
+            tags: ["auth"]
+        },
+        preHandler: app.createPreHandler([app.setUserData, app.verifyAuth]),
+        async handler(req, reply) {
+            const data = await handlers.deleteAvatar(app, {
+                userData: req.userData!
+            })
+            await reply.sendData(data)
+        }
+    })
+
     app.post("/logout", {
         schema: {
             tags: ["auth"]

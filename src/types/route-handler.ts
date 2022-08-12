@@ -7,7 +7,7 @@ export interface RequestData {
     cookies?: Record<string, string>
     params?: Record<string, string | number>
     query?: Record<string, unknown>
-    body?: Record<string, unknown>
+    body?: Record<string, any>
 }
 
 export type RouteHandler<T extends RequestData = object> = (

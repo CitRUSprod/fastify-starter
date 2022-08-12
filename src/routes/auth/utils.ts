@@ -1,3 +1,5 @@
+import path from "path"
+import fs from "fs-extra"
 import { FastifyInstance } from "fastify"
 import { Unauthorized } from "http-errors"
 import { TokenTtl } from "$/enums"
@@ -7,6 +9,8 @@ interface PayloadWithTimestamps extends UserPayload {
     iat: string
     exp: string
 }
+
+const dirPath = path.join(__dirname, "../storage/images/avatars")
 
 export function generateTokens(app: FastifyInstance, payload: UserPayload) {
     const access = app.jwt.sign(payload, { expiresIn: TokenTtl.Access })
@@ -21,6 +25,10 @@ export function getPayload(app: FastifyInstance, token: string): UserPayload {
     } catch (err: any) {
         throw new Unauthorized(err.message)
     }
+}
+
+export async function deleteAvatar(avatar: string) {
+    await fs.remove(`${dirPath}/${avatar}`)
 }
 
 export async function deleteExpiredRefreshTokens(app: FastifyInstance) {

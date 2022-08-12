@@ -15,7 +15,8 @@ export function dto(user: PartialUserData): JsonObject {
         },
         confirmedEmail: user.confirmedEmail,
         banned: user.banned,
-        registrationDate: user.registrationDate.toJSON()
+        registrationDate: user.registrationDate.toJSON(),
+        avatar: user.avatar
     }
 }
 

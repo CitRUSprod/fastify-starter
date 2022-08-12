@@ -1,3 +1,4 @@
+import { MultipartFile } from "@fastify/multipart"
 import { Type, Static } from "@sinclair/typebox"
 import * as schemas from "$/schemas"
 
@@ -37,6 +38,19 @@ export const updateMeBody = Type.Strict(
 )
 
 export type UpdateMeBody = Static<typeof updateMeBody>
+
+export const uploadAvatarBody = Type.Strict(
+    Type.Object(
+        {
+            img: schemas.file()
+        },
+        { additionalProperties: false }
+    )
+)
+
+export interface UploadAvatarBody {
+    img: MultipartFile
+}
 
 export const logoutCookies = Type.Strict(
     Type.Object(
