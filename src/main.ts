@@ -1,6 +1,7 @@
 import path from "path"
 import fastify from "fastify"
 import swagger from "@fastify/swagger"
+import swaggerUi from "@fastify/swagger-ui"
 import staticPlugin from "@fastify/static"
 import multipart from "@fastify/multipart"
 import jwt from "@fastify/jwt"
@@ -21,15 +22,14 @@ app.setSchemaErrorFormatter((errors, scope) => normalizeAjvErrors(errors, scope)
 
 if (env.ENABLE_DOCS) {
     app.register(swagger, {
-        routePrefix: "/docs",
         swagger: {
             info: {
                 title: "Fastify Starter API",
                 version: ""
-            },
-            host: `localhost:${port}`
-        },
-        exposeRoute: true
+            }
+        }
+    }).register(swaggerUi, {
+        routePrefix: "/docs"
     })
 }
 
