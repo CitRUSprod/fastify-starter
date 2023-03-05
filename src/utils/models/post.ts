@@ -1,9 +1,9 @@
 import { FastifyInstance } from "fastify"
 import { BadRequest } from "http-errors"
 import { User, Post } from "@prisma/client"
-import { JsonObject } from "type-fest"
+import { JsonifiableObject } from "$/types"
 
-export function dto(post: Post & { author: User }): JsonObject {
+export function dto(post: Post & { author: User }): JsonifiableObject {
     return {
         id: post.id,
         title: post.title,
