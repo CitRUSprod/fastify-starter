@@ -12,8 +12,8 @@ export function dto(post: Post & { author: User }): JsonifiableObject {
             id: post.author.id,
             username: post.author.username
         },
-        creationDate: post.creationDate.toJSON(),
-        editingDate: post.editingDate?.toJSON() ?? null
+        creationDate: post.creationDate,
+        editingDate: post.editingDate
     }
 }
 

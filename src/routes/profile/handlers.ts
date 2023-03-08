@@ -1,10 +1,11 @@
 import { BadRequest } from "http-errors"
 import argon2 from "argon2"
 import { v4 as createUuid } from "uuid"
-import { env, writeImage, sendEmail, models } from "$/utils"
+import { env, writeFile, removeFile, sendEmail, models } from "$/utils"
 import { UserData, RouteHandler } from "$/types"
 import * as schemas from "./schemas"
 import * as utils from "./utils"
+import { ImgPath } from "$/enums"
 
 export const getUser: RouteHandler<{ userData: UserData }> = async (app, { userData }) => ({
     payload: models.user.dto(userData)
@@ -44,9 +45,9 @@ export const uploadAvatar: RouteHandler<{
     userData: UserData
     body: schemas.UploadAvatarBody
 }> = async (app, { userData, body }) => {
-    if (userData.avatar) await utils.deleteAvatar(userData.avatar)
+    const avatar = await writeFile(ImgPath.Avatars, body.img)
 
-    const avatar = await writeImage(body.img)
+    if (userData.avatar) await removeFile(ImgPath.Avatars, userData.avatar)
 
     await app.prisma.user.update({
         where: { id: userData.id },
@@ -61,7 +62,7 @@ export const deleteAvatar: RouteHandler<{
 }> = async (app, { userData }) => {
     if (!userData.avatar) throw new BadRequest("You do not have an avatar")
 
-    await utils.deleteAvatar(userData.avatar)
+    await removeFile(ImgPath.Avatars, userData.avatar)
 
     await app.prisma.user.update({
         where: { id: userData.id },
