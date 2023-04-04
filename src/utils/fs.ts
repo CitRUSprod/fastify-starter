@@ -12,7 +12,7 @@ export async function writeFile(dirPath: string, file: MultipartFile) {
     const imgExtList: Array<string> = Object.values(ImgExtension)
 
     const fileName = `${createUuid()}${ext}`
-    const absDirPath = path.join(__dirname, "../static", dirPath)
+    const absDirPath = path.join(__dirname, "../files", dirPath)
 
     await fs.ensureDir(absDirPath)
 
@@ -40,6 +40,6 @@ export async function writeFile(dirPath: string, file: MultipartFile) {
 }
 
 export async function removeFile(dirPath: string, fileName: string) {
-    const absDirPath = path.join(__dirname, "../static", dirPath)
+    const absDirPath = path.join(__dirname, "../files", dirPath)
     await fs.remove(`${absDirPath}/${fileName}`)
 }

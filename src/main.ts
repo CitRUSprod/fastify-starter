@@ -33,7 +33,7 @@ if (env.ENABLE_DOCS) {
     })
 }
 
-app.register(staticPlugin, { root: path.join(__dirname, "../static"), prefix: "/files" })
+app.register(staticPlugin, { root: path.join(__dirname, "../files"), prefix: "/files" })
     .register(multipart, { attachFieldsToBody: true })
     .register(jwt, { secret: env.JWT_SECRET, cookie: { cookieName: "accessToken", signed: false } })
     .register(cookie)

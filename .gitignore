@@ -2,6 +2,6 @@
 .vscode
 *.log
 /db/data
-/static
+/files
 dist
 node_modules
