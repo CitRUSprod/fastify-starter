@@ -1,11 +1,11 @@
 import { BadRequest } from "http-errors"
 import argon2 from "argon2"
 import { v4 as createUuid } from "uuid"
+import { ImgPath } from "$/enums"
 import { env, writeFile, removeFile, sendEmail, models } from "$/utils"
 import { UserData, RouteHandler } from "$/types"
 import * as schemas from "./schemas"
 import * as utils from "./utils"
-import { ImgPath } from "$/enums"
 
 export const getUser: RouteHandler<{ userData: UserData }> = async (app, { userData }) => ({
     payload: models.user.dto(userData)
