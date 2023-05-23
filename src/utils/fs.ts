@@ -5,18 +5,31 @@ import sharp from "sharp"
 import { v4 as createUuid } from "uuid"
 import { ImgSize, ImgExtension } from "$/enums"
 
+export function getAbsFilesPath(...paths: Array<string>) {
+    return path.join(__dirname, "../files", ...paths)
+}
+
+function getExt(file: MultipartFile) {
+    return path.extname(file.filename).toLowerCase()
+}
+
+const imgExtList: Array<string> = Object.values(ImgExtension)
+
+export function isImgFile(file: MultipartFile) {
+    return imgExtList.includes(getExt(file))
+}
+
 export async function writeFile(dirPath: string, file: MultipartFile) {
-    const ext = path.extname(file.filename).toLowerCase()
+    const ext = getExt(file)
     const buffer = await file.toBuffer()
 
-    const imgExtList: Array<string> = Object.values(ImgExtension)
-
     const fileName = `${createUuid()}${ext}`
-    const absDirPath = path.join(__dirname, "../files", dirPath)
+    const absDirPath = getAbsFilesPath(dirPath)
+    const absFilePath = path.join(absDirPath, fileName)
 
     await fs.ensureDir(absDirPath)
 
-    if (imgExtList.includes(ext)) {
+    if (isImgFile(file)) {
         const img = sharp(buffer)
 
         const { width, height } = await img.metadata()
@@ -31,15 +44,14 @@ export async function writeFile(dirPath: string, file: MultipartFile) {
             }
         }
 
-        await img.toFile(`${absDirPath}/${fileName}`)
+        await img.toFile(absFilePath)
     } else {
-        await fs.writeFile(`${absDirPath}/${fileName}`, buffer)
+        await fs.writeFile(absFilePath, buffer)
     }
 
     return fileName
 }
 
 export async function removeFile(dirPath: string, fileName: string) {
-    const absDirPath = path.join(__dirname, "../files", dirPath)
-    await fs.remove(`${absDirPath}/${fileName}`)
+    await fs.remove(getAbsFilesPath(dirPath, fileName))
 }
